@@ -1,838 +1,1244 @@
-<!DOCTYPE html>
-
-<html class="light" lang="vi"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>DKS SKILL 2026 - Đấu Trường Kỹ Năng CLB DKS (Dữ Liệu Thật 4 Đội)</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap" rel="stylesheet"/>
+<!DOCTYPE html><html class="light scroll-smooth" lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>DKS SKILL 2026 - Đấu Trường Kỹ Năng CLB DKS (Tournament &amp; Leaderboard)</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          brand: {
             primary: "#005baf",
-            "primary-container": "#0074db",
-            secondary: "#00677f",
-            "electric-blue": "#0088ff",
-            "dks-yellow": "#ffb900"
-          },
-          fontFamily: {
-            headline: ["Space Grotesk", "sans-serif"],
-            body: ["Plus Jakarta Sans", "sans-serif"],
-            mono: ["JetBrains Mono", "monospace"]
+            electric: "#0066FF",
+            cyan: "#00d2ff",
+            neon: "#00E6A0",
+            amber: "#ffba20",
+            dark: "#001c38",
+            deep: "#071329",
+            navy: "#0a2558"
           }
+        },
+        fontFamily: {
+          headline: ["Space Grotesk", "sans-serif"],
+          body: ["Plus Jakarta Sans", "sans-serif"],
+          mono: ["JetBrains Mono", "monospace"]
+        },
+        boxShadow: {
+          'neon-blue': '0 10px 30px -5px rgba(0, 102, 255, 0.45)',
+          'neon-cyan': '0 10px 30px -5px rgba(0, 210, 255, 0.45)',
+          'neon-amber': '0 10px 30px -5px rgba(255, 186, 32, 0.45)',
+          'neon-emerald': '0 10px 30px -5px rgba(0, 230, 160, 0.35)',
+          'hud': '0 12px 36px 0 rgba(0, 28, 56, 0.12)',
+          'card-bold': '0 16px 40px -10px rgba(0, 50, 150, 0.15)'
         }
       }
-    };
-  </script>
+    }
+  };
+</script>
 <style>
-    body { overscroll-behavior: none; }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-  </style>
+  body {
+    overscroll-behavior: none;
+    background-color: #f0f5ff;
+    background-image: 
+      radial-gradient(circle at top right, rgba(0, 102, 255, 0.08), transparent 40%),
+      radial-gradient(circle at bottom left, rgba(0, 210, 255, 0.06), transparent 40%),
+      radial-gradient(#005baf15 1.2px, transparent 1.2px);
+    background-size: 100% 100%, 100% 100%, 28px 28px;
+    background-position: 0 0, 0 0, 0 0;
+  }
+  ::-webkit-scrollbar { width: 7px; height: 7px; }
+  ::-webkit-scrollbar-thumb { background: #0074db; border-radius: 8px; }
+  ::-webkit-scrollbar-track { background: #e6eeff; }
+  
+  .hud-border {
+    position: relative;
+  }
+  .hud-border::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 12px; height: 12px;
+    border-top: 3px solid #00d2ff;
+    border-left: 3px solid #00d2ff;
+    z-index: 20;
+    pointer-events: none;
+  }
+  .hud-border::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0; width: 12px; height: 12px;
+    border-bottom: 3px solid #00d2ff;
+    border-right: 3px solid #00d2ff;
+    z-index: 20;
+    pointer-events: none;
+  }
+  .card-lift {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .card-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px -10px rgba(0, 91, 175, 0.22);
+  }
+  .glowing-ring {
+    box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.4), 0 0 25px rgba(0, 102, 255, 0.25);
+  }
+</style>
 </head>
-<body class="bg-[#f4f8fd] text-[#001c38] font-body min-h-screen">
-<!-- Top Navigation -->
-<header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-sky-100 shadow-sm">
+<body class="text-[#001c38] font-body min-h-screen selection:bg-brand-cyan selection:text-[#001c38] antialiased">
+<!-- TOP HUD NAVIGATION -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-2xl border-b-2 border-blue-200/90 shadow-hud">
 <div class="h-20 w-full px-4 sm:px-8 max-w-7xl mx-auto flex items-center justify-between gap-4">
-<div class="flex items-center gap-3">
-<img alt="Logo CLB Kỹ Năng DKS" class="w-12 h-12 rounded-full object-cover shadow-sm border border-sky-200 shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-iIX8IuARSX3gjRjzjxwjb_84aXYRY22Cm7ZlScW7RXpecHh1rSztJW4az3KkFTdprrRfpsuekk8TgHoGBtC7galF1r4Kw83ieWDB8c5edBgoBUS51713OdR1dfjDqkcc3YMNPOSams7LbmJSoDWG3EOCXGmhazxdqjK57fLM_RBPQGZ9Ube7xgrdMKtljuqXGz2y8E_pS4d_2dl2dqIS4yJhX2zT_RmQ36Adqy9VmFZ9qse1OadOV0G6CFtoIEOLtEs"/>
+<!-- Brand & Badges -->
+<div class="flex items-center gap-3.5">
+<div class="relative group">
+<div class="absolute -inset-1.5 bg-gradient-to-r from-blue-600 via-cyan-400 to-emerald-400 rounded-full blur opacity-60 group-hover:opacity-100 transition duration-500"></div>
+<img alt="Logo CLB Kỹ Năng DKS" class="relative w-12 h-12 rounded-full object-cover shadow-md border-2 border-white shrink-0 bg-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQIXEOcFpEMnb1o_KHH8_c27SXC31x0Itum7DWIpMsw09KLe08mufiesYL9QVK8z3iqgiraWEdaUaOwUOIZqsxz0BIsNMfqus6etl_6rL4lM-4alkCd7BEB1f5s9ybPgcNY3nfu3o0kn5f-bCxnq_DRRIAAhJiQPsQMjrxizkLP_NJ--LKuk_J1o11ewrWdGnCBEZt1skRN51w5pkuOvXgsbm_pGr6XK3WaKOi8nJ_jxh-GZqLrEo3Ts9eCr62ltzeCSU">
+</div>
 <div class="flex flex-col">
-<span class="font-headline font-extrabold text-xl uppercase tracking-tight text-primary flex items-center gap-1.5">
-          DKS SKILL <span class="text-amber-500 font-black">2026</span>
-</span>
-<span class="font-mono text-[10px] font-bold uppercase tracking-wider text-secondary">CLB KỸ NĂNG DKS • DỮ LIỆU CHÍNH THỨC</span>
+<div class="font-headline font-black text-xl tracking-tight flex items-center gap-2 uppercase">
+<span class="bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-500 bg-clip-text text-transparent drop-shadow-sm">DKS SKILL</span>
+<span class="px-2 py-0.5 rounded-md bg-amber-400 text-blue-950 font-black text-xs tracking-wider shadow-sm border border-amber-300">2026</span>
 </div>
-<span class="hidden xl:inline-flex items-center gap-1.5 ml-4 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[11px] font-bold">
-<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        Danh sách
-      </span>
+<span class="font-mono text-[10px] font-extrabold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ring-2 ring-emerald-300/50"></span>
+          CLB KỸ NĂNG DKS
+        </span>
 </div>
-<nav class="hidden lg:flex items-center gap-6 font-mono text-xs font-bold uppercase tracking-wider text-slate-600">
-<a class="hover:text-primary transition-colors" href="#teams">4 Đội Chơi</a>
-<a class="hover:text-primary transition-colors" href="#timeline">Timeline</a>
-<a class="hover:text-primary transition-colors" href="#hall-of-fame">Vinh Danh</a>
-<a class="hover:text-primary transition-colors" href="#leaderboard">Bảng Thành Tích</a>
-<a class="hover:text-primary transition-colors" href="#scoring-rules">Cơ Chế </a>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden lg:flex items-center gap-6 font-mono text-xs font-black uppercase tracking-wider text-slate-700">
+<a class="relative py-2 hover:text-blue-600 transition-colors after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 hover:after:w-full after:transition-all" href="#teams">4 Đội Chơi</a>
+<a class="relative py-2 hover:text-blue-600 transition-colors after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 hover:after:w-full after:transition-all" href="#timeline">Timeline Chương Trình</a>
+<a class="relative py-2 hover:text-blue-600 transition-colors after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 hover:after:w-full after:transition-all" href="#hall-of-fame">Vinh Danh</a>
+<a class="relative py-2 hover:text-blue-600 transition-colors after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 hover:after:w-full after:transition-all" href="#leaderboard">Bảng Thành Tích</a>
+<a class="relative py-2 hover:text-blue-600 transition-colors after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 hover:after:w-full after:transition-all" href="#scoring-rules">Cơ Chế Tính Điểm</a>
 </nav>
-<a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-mono text-xs font-bold uppercase tracking-wider shadow hover:shadow-md transition-all" href="#leaderboard">
+<!-- Action Button -->
+<a class="relative group overflow-hidden px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-500 text-white font-mono text-xs font-black uppercase tracking-wider shadow-neon-blue hover:shadow-neon-cyan transition-all transform hover:-translate-y-0.5" href="#leaderboard">
+<span class="relative z-10 flex items-center gap-2">
 <span class="material-symbols-outlined text-base">leaderboard</span>
-<span>Bảng Điểm Thật</span>
+<span class="">Bảng Điểm Thật</span>
+</span>
+<div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
 </a>
 </div>
 </header>
 <main class="w-full pt-20">
-<!-- Notice Ticker -->
-<div class="w-full bg-blue-950 text-white px-4 sm:px-8 py-2 border-b border-blue-900">
+<!-- ESPORTS TICKER -->
+<div class="w-full bg-gradient-to-r from-[#001c38] via-[#0a2558] to-[#001c38] text-white px-4 sm:px-8 py-3 border-b-2 border-cyan-400/40 shadow-inner">
 <div class="flex items-center justify-between max-w-7xl mx-auto text-xs font-mono">
-<div class="flex items-center gap-2">
-<span class="px-2 py-0.5 rounded bg-amber-400 text-blue-950 font-black uppercase text-[10px]">CẬP NHẬT CHÍNH THỨC</span>
-<span class="text-sky-200 truncate">Tổng hợp dữ liệu thực tế từ 8 bảng tính: Điểm cá nhân Morse, Semaphore, Test IQ 51 thí sinh &amp; Xếp hạng 4 chiến đội.</span>
-</div>
-<span class="hidden md:inline text-cyan-300 font-bold">CHỦ NHẬT 21:00 CHỐT XẾP HẠNG</span>
-</div>
-</div>
-<!-- HERO SECTION WITH BACKDROP -->
-<section class="w-full px-4 sm:px-8 pt-6 pb-12">
-<div class="max-w-7xl mx-auto flex flex-col items-center">
-<!-- Backdrop Graphic -->
-<div class="w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border-4 border-white relative mb-8 group">
-<img alt="DKS SKILL 2026 - Đấu trường Kỹ năng CLB DKS" class="w-full h-auto object-cover max-h-[520px]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6_4JU5p3m_7ZWO2KKjLDdhfx2yAiWhIXyvoKd79LsC4ikbMLGhW-8q9NlcHzuFO4CF6kLsICXZnF-q4Ts5Oh9O9Jc3bpkBqhexXEwr4SEPxQYACb88zSJUPzYlwTACE_CBzlKU7LdUIW35HJd5gYvtby7MfCtNj9KqTpMn_7GceTtJo-Dwk-6OSoyZVHdwxcpwtt_W_MJXuvh9y9TlH_04fmc_x2AwGiMIAfYojISLQ0_fuVS9gZiag79Y0bwcmVkEgI"/>
-<div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-blue-950/85 via-blue-950/40 to-transparent flex items-end justify-between p-4 sm:p-6 text-white">
 <div class="flex items-center gap-3">
-<span class="px-3 py-1 rounded-lg bg-amber-400 text-blue-950 font-mono text-xs font-black uppercase">ĐẤU TRƯỜNG KỸ NĂNG 2026</span>
-<span class="font-body text-sm font-semibold hidden sm:inline text-sky-200">Bản lĩnh thanh niên • Trí tuệ kỷ nguyên số CLB DKS</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-amber-400 text-blue-950 font-black uppercase text-[11px] tracking-wide shadow-md">
+<span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
+          CẬP NHẬT CHÍNH THỨC
+        </span>
+<span class="text-cyan-100 truncate font-semibold">Tổng hợp dữ liệu thực tế từ 8 bảng tính: Điểm cá nhân Morse, Semaphore, Test IQ 51 thí sinh &amp; Xếp hạng 4 chiến đội.</span>
 </div>
-<span class="px-3 py-1 rounded-full bg-cyan-500/30 backdrop-blur border border-cyan-300/40 font-mono text-xs font-bold text-cyan-200">
+<div class="hidden md:flex items-center gap-2 text-cyan-200 font-extrabold bg-[#001c38]/90 border border-cyan-400/50 px-3.5 py-1 rounded-full shadow">
+<span class="material-symbols-outlined text-sm text-amber-400">timer</span>
+<span class="">CHỦ NHẬT 21:00 CHỐT XẾP HẠNG</span>
+</div>
+</div>
+</div>
+<!-- HERO SECTION WITH OFFICIAL BACKDROP & HUD OVERLAYS -->
+<section class="w-full px-4 sm:px-8 pt-8 pb-14 bg-gradient-to-b from-[#eaf2ff] via-[#f0f6ff] to-[#f8faff]">
+<div class="max-w-7xl mx-auto flex flex-col items-center">
+<!-- Backdrop Graphic with Vivid Contrast and HUD Borders -->
+<div class="w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-4 border-white relative mb-10 group hud-border bg-slate-950 glowing-ring">
+<img alt="DKS SKILL 2026 - Đấu trường Kỹ năng CLB DKS" class="w-full h-[620px] object-cover object-center transform group-hover:scale-[1.015] transition-transform duration-700" src="./image/Thu3.png">
+<div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#001c38]/95 via-[#001c38]/70 to-transparent flex items-end justify-between p-5 sm:p-8 text-white">
+<div class="flex items-center gap-3">
+<span class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 text-blue-950 font-mono text-xs sm:text-sm font-black uppercase shadow-lg border border-amber-200">
+              DKS SKILL 2026
+            </span>
+<span class="font-body text-sm font-bold hidden sm:inline text-cyan-200 drop-shadow">
+              Bản lĩnh chiến binh • Trí tuệ thanh niên CLB DKS
+            </span>
+</div>
+<span class="flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/30 backdrop-blur-md border border-cyan-300 font-mono text-xs font-black text-cyan-200 shadow-neon-cyan">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
             DỮ LIỆU ĐÃ ĐỒNG BỘ 100%
           </span>
 </div>
 </div>
-<!-- Title & Intro -->
-<div class="text-center max-w-4xl mx-auto mb-10">
-<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-100 border border-sky-300 text-sky-900 font-mono text-xs font-extrabold uppercase mb-3">
-<span class="material-symbols-outlined text-sm text-cyan-600">verified</span>
+<!-- Section Title & Intro -->
+<div class="text-center max-w-4xl mx-auto mb-12">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-100 border border-blue-400 text-blue-950 font-mono text-xs font-black uppercase mb-4 shadow-sm">
+<span class="material-symbols-outlined text-base text-blue-600">verified</span>
           BẢNG TỔNG HỢP NĂNG LỰC TOÀN ĐOÀN CLB DKS 2026
         </div>
-<h1 class="font-headline text-3xl sm:text-5xl font-black uppercase text-blue-950 tracking-tight">
-          BẢN LĨNH THỰC CHIẾN <span class="bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">KỶ NGUYÊN MỚI</span>
+<h1 class="font-headline text-3xl sm:text-5xl lg:text-6xl font-black uppercase text-[#001c38] tracking-tight leading-none mb-4">
+          BẢN LĨNH THỰC CHIẾN <span class="bg-gradient-to-r from-blue-700 via-cyan-500 to-emerald-500 bg-clip-text text-transparent drop-shadow-sm">KỶ NGUYÊN MỚI</span>
 </h1>
-<p class="font-body text-slate-600 text-base mt-2 max-w-2xl mx-auto">
-          Tổng hợp kết quả sát hạch 51 thí sinh qua 4 đội <strong class="text-blue-900">D2M, ALPHA, W, VTD</strong> với 3 bộ môn kỹ năng cốt lõi (Morse, Semaphore, Mật thư) và bài kiểm tra Test IQ chuẩn hoá.
+<p class="font-body text-slate-700 text-base sm:text-lg max-w-3xl mx-auto font-medium leading-relaxed">
+          Tổng hợp kết quả sát hạch 51 thí sinh qua 4 đội <strong class="text-blue-900 font-extrabold underline decoration-blue-400">D2M, ALPHA, W, VTD</strong> với 3 bộ môn kỹ năng cốt lõi (Morse, Semaphore, Mật thư) và bài kiểm tra Test IQ chuẩn hoá.
         </p>
 </div>
-<!-- 4 Quick Stats -->
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-<div class="p-5 rounded-2xl bg-white border border-sky-100 shadow-sm">
-<div class="flex justify-between items-center text-slate-500 text-xs font-mono font-bold uppercase mb-1">
-<span>QUÂN SỐ THỰC TẾ</span>
-<span class="material-symbols-outlined text-blue-600">groups</span>
+<!-- 4 ESPORTS HOLOGRAPHIC HUD STATS -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 w-full">
+<!-- Card 1 -->
+<div class="p-6 rounded-2xl bg-white border-2 border-blue-200 shadow-card-bold card-lift relative overflow-hidden group">
+<div class="absolute -right-6 -bottom-6 w-28 h-28 bg-blue-500/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+<div class="flex justify-between items-center text-slate-600 text-xs font-mono font-black uppercase mb-3">
+<span class="tracking-wider text-blue-900">QUÂN SỐ THỰC TẾ</span>
+<div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shadow-inner">
+<span class="material-symbols-outlined text-2xl">groups</span>
 </div>
-<div class="font-headline text-4xl font-black text-blue-950">51</div>
-<p class="font-body text-xs text-slate-500 mt-1">Chiến binh từ 4 chiến đội</p>
 </div>
-<div class="p-5 rounded-2xl bg-white border border-sky-100 shadow-sm">
-<div class="flex justify-between items-center text-slate-500 text-xs font-mono font-bold uppercase mb-1">
-<span>CHIẾN ĐỘI CHÍNH THỨC</span>
-<span class="material-symbols-outlined text-amber-500">military_tech</span>
+<div class="font-headline text-4xl sm:text-5xl font-black text-blue-950 tracking-tight">51</div>
+<p class="font-body text-xs text-slate-600 mt-2.5 font-bold flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-blue-600"></span> Chiến binh từ 4 đội
+          </p>
 </div>
-<div class="font-headline text-4xl font-black text-amber-500">04</div>
-<p class="font-body text-xs text-slate-500 mt-1">Team D2M, Alpha, W, VTD</p>
+<!-- Card 2 -->
+<div class="p-6 rounded-2xl bg-white border-2 border-amber-300 shadow-card-bold card-lift relative overflow-hidden group">
+<div class="absolute -right-6 -bottom-6 w-28 h-28 bg-amber-500/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+<div class="flex justify-between items-center text-slate-600 text-xs font-mono font-black uppercase mb-3">
+<span class="tracking-wider text-amber-900">ĐỘI HÌNH CHÍNH THỨC</span>
+<div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shadow-inner">
+<span class="material-symbols-outlined text-2xl">military_tech</span>
 </div>
-<div class="p-5 rounded-2xl bg-white border border-sky-100 shadow-sm">
-<div class="flex justify-between items-center text-slate-500 text-xs font-mono font-bold uppercase mb-1">
-<span>BAN CỐ VẤN MENTOR</span>
-<span class="material-symbols-outlined text-emerald-600">supervisor_account</span>
 </div>
-<div class="font-headline text-4xl font-black text-emerald-600">08</div>
-<p class="font-body text-xs text-slate-500 mt-1">2 Mentor giàu kinh nghiệm / Đội</p>
+<div class="font-headline text-4xl sm:text-5xl font-black text-amber-500 tracking-tight">04</div>
+<p class="font-body text-xs text-slate-600 mt-2.5 font-bold flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-amber-500"></span> Team D2M, Alpha, W, VTD
+          </p>
 </div>
-<div class="p-5 rounded-2xl bg-white border border-sky-100 shadow-sm">
-<div class="flex justify-between items-center text-slate-500 text-xs font-mono font-bold uppercase mb-1">
-<span>ĐIỂM TEST IQ ĐỘI CAO NHẤT</span>
-<span class="material-symbols-outlined text-cyan-600">psychology</span>
+<!-- Card 3 -->
+<div class="p-6 rounded-2xl bg-white border-2 border-emerald-300 shadow-card-bold card-lift relative overflow-hidden group">
+<div class="absolute -right-6 -bottom-6 w-28 h-28 bg-emerald-500/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+<div class="flex justify-between items-center text-slate-600 text-xs font-mono font-black uppercase mb-3">
+<span class="tracking-wider text-emerald-900">BAN CỐ VẤN MENTOR</span>
+<div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shadow-inner">
+<span class="material-symbols-outlined text-2xl">supervisor_account</span>
 </div>
-<div class="font-headline text-4xl font-black text-cyan-600">67.9</div>
-<p class="font-body text-xs text-slate-500 mt-1">Team D2M dẫn đầu toàn đoàn</p>
+</div>
+<div class="font-headline text-4xl sm:text-5xl font-black text-emerald-600 tracking-tight">08</div>
+<p class="font-body text-xs text-slate-600 mt-2.5 font-bold flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span> 2 Mentor giàu kinh nghiệm / Đội
+          </p>
+</div>
+<!-- Card 4 -->
+<div class="p-6 rounded-2xl bg-white border-2 border-cyan-300 shadow-card-bold card-lift relative overflow-hidden group">
+<div class="absolute -right-6 -bottom-6 w-28 h-28 bg-cyan-500/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+<div class="flex justify-between items-center text-slate-600 text-xs font-mono font-black uppercase mb-3">
+<span class="tracking-wider text-cyan-900">ĐIỂM TEST IQ ĐỘI CAO NHẤT</span>
+<div class="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center shadow-inner">
+<span class="material-symbols-outlined text-2xl">psychology</span>
+</div>
+</div>
+<div class="font-headline text-4xl sm:text-5xl font-black text-cyan-600 tracking-tight">67.9</div>
+<p class="font-body text-xs text-slate-600 mt-2.5 font-bold flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-cyan-500"></span> Team D2M dẫn đầu toàn đoàn
+          </p>
 </div>
 </div>
 </div>
 </section>
-<!-- SECTION: 4 ĐỘI CHƠI & BAN CỐ VẤN CHI TIẾT (DANH SÁCH THÀNH VIÊN TỪ GOOGLE SHEET) -->
-<section class="w-full px-4 sm:px-8 py-16 bg-[#f8fbff] border-y border-sky-100" id="teams">
+<!-- SECTION: 4 ĐỘI CHƠI & BAN CỐ VẤN CHI TIẾT (ROSTER ESPORTS CARD) -->
+<section class="w-full px-4 sm:px-8 py-16 bg-[#eef4ff] border-y-2 border-blue-200" id="teams">
 <div class="max-w-7xl mx-auto">
 <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-3">
 <div>
-<span class="font-mono text-xs font-extrabold uppercase tracking-wider text-blue-600">ĐỘI HÌNH TÁC CHIẾN 4 CÁNH QUÂN</span>
-<h2 class="font-headline text-2xl sm:text-4xl font-black uppercase text-blue-950 mt-1">4 CHIẾN ĐỘI &amp; TOÀN BỘ 51 CHIẾN BINH</h2>
+<div class="flex items-center gap-2 text-blue-700 font-mono text-xs font-black uppercase tracking-wider mb-1">
+<span class="material-symbols-outlined text-base">shield</span>
+            ĐỘI HÌNH CHÍNH THỨC CỦA 4 ĐỘI
+          </div>
+<h2 class="font-headline text-2xl sm:text-4xl font-black uppercase text-[#001c38]">4 ĐỘI CHƠI &amp; TOÀN BỘ 51 CHIẾN BINH</h2>
 </div>
-<p class="font-body text-xs sm:text-sm text-slate-500 max-w-md">Danh sách đầy đủ 51 thành viên được phân bổ chính thức từ bảng dữ liệu CLB DKS 2026.</p>
+<p class="font-body text-xs sm:text-sm text-slate-600 font-medium max-w-md">Danh sách đầy đủ 51 thành viên được phân bổ chính thức từ bảng dữ liệu CLB DKS 2026.</p>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-<!-- Team D2M Card & Members -->
-<div class="rounded-2xl bg-white p-5 border-2 border-cyan-400 shadow-sm flex flex-col justify-between">
+<!-- TEAM D2M (CYBER BLUE) -->
+<div class="rounded-3xl bg-white border-2 border-cyan-400 shadow-card-bold card-lift flex flex-col justify-between overflow-hidden relative">
+<!-- Mentor Photo Subtle Background Layer -->
+<div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+<img alt="Mentor Backdrop" class="w-full h-full object-cover object-[center_18%] opacity-70 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1ZYy2B2c7ogSCiosvMHOo-nXWrZSdqeJD6SnV_WUqhbqtLYTHBQW6sqUHUDjT-cRIJgxbSZwGLX_cSx1oeOTOdVhsOpSvJuPyRk7mQ85knVvL2kVa7AUFRG291uFtemHsTTMtuVUUh_c4uGTsPHD-stjZBYka8Cpuv8oioU1gRBFh-ql3rJrRXZyq3q_zLkavXnTiOlcCY3WTJry8GgFrYJHEoQ0ge3ih-PWXUT9yXdKAhz9UNllQ-g"/>
+<div class="absolute inset-0 bg-gradient-to-b from-white/30 via-white/45 to-white/70"></div>
+</div>
+  <!-- Team Header Graphic Banner -->
+<div class="h-28 bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-500 p-4 text-white relative flex flex-col justify-between">
+<div class="flex justify-between items-center z-10">
+<span class="px-2.5 py-0.5 rounded-full bg-amber-400 text-blue-950 font-mono text-[10px] font-black uppercase shadow">TOP 1 IQ (67.90)</span>
+<span class="font-mono text-xs font-black px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm">13 TV</span>
+</div>
+<div class="flex items-center justify-between z-10">
 <div>
-<div class="flex justify-between items-center mb-2">
-<span class="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-100 text-cyan-800 uppercase">Top 1 IQ (67.90)</span>
-<span class="font-mono text-xs font-bold text-slate-400">13 TV</span>
+<h3 class="font-headline text-2xl font-black uppercase tracking-tight text-white drop-shadow">TEAM D2M</h3>
+<span class="font-mono text-[10px] text-cyan-200 uppercase font-bold tracking-wide">Cyber Blue Legion</span>
 </div>
-<h3 class="font-headline text-2xl font-black text-blue-950 uppercase">TEAM D2M</h3>
-<p class="font-mono text-xs text-cyan-700 font-semibold mb-3">Mentor: Bùi Minh - Văn Minh</p>
-<div class="p-2.5 rounded-xl bg-cyan-50/60 border border-cyan-100 text-xs space-y-1 mb-4">
-<div><strong class="text-blue-950">Đội trưởng:</strong> Xuân Nguyên (T)</div>
-<div><strong class="text-blue-950">Morse T1:</strong> Xuân Nguyên (B+), Tuấn Anh (B+), Minh Toàn (B+), Hữu Tình (B+)</div>
-</div>
-<div class="text-[11px] font-mono text-slate-600 leading-relaxed max-h-48 overflow-y-auto pr-1">
-<strong class="text-slate-800 block mb-1 font-bold">Danh sách thành viên:</strong>
-              1. Xuân Nguyên (T)<br/>
-              2. Tuấn Anh<br/>
-              3. Trần Ngọc Như Ý<br/>
-              4. Khánh Như<br/>
-              5. Minh Toàn<br/>
-              6. Trần Đình Nghĩa<br/>
-              7. Hữu Tình<br/>
-              8. Nguyễn Bá Toàn<br/>
-              9. Quốc Đạt (Đạt Lê)<br/>
-              10. Vũ Đại Dương<br/>
-              11. Lê T.K. Huyền<br/>
-              12. Lâm T.K. Huyền<br/>
-              13. Quỳnh Anh
-            </div>
+<div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-2xl">bolt</span>
 </div>
 </div>
-<!-- Team Alpha Card & Members -->
-<div class="rounded-2xl bg-white p-5 border-2 border-indigo-200 shadow-sm flex flex-col justify-between">
+</div>
+<div class="relative z-10 p-5 flex-1 flex flex-col justify-between">
 <div>
-<div class="flex justify-between items-center mb-2">
-<span class="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 uppercase">Top 2 IQ (65.58)</span>
-<span class="font-mono text-xs font-bold text-slate-400">12 TV</span>
+<!-- Mentor & Captain Badge -->
+<div class="flex items-center gap-2.5 p-2.5 rounded-xl bg-cyan-50 border border-cyan-200 mb-3">
+<img alt="Xuân Nguyên Avatar" class="w-8 h-8 rounded-full object-cover border border-cyan-400 shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XAUiou-THBDT50-z9Wr6jKz2lngQYajb2M_fV0KTTBN6GLO5wZEI5PzaNmadNO9sLtKbWRVSeMUxQVvKOIq4NaKUsLxqNLZ03edHwOZi1jkTHgrkDfHF0JYHEwfVTbbepfPk6Qf57tWlUEPGi_WznqfzLLfdAkym84Xa-5nl8ZUFAqq8hhc8hnThg6aBzOLBC7e-dxJzaX4M9hzMU0dY-wm-jp7mt-Qtx_qbIzkKmpjoAZ1CM1P9miOLo">
+<div class="text-xs">
+<div class="font-mono font-black text-cyan-950 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-cyan-600">military_tech</span>
+<span class="">Xuân Nguyên (T)</span>
 </div>
-<h3 class="font-headline text-2xl font-black text-blue-950 uppercase">TEAM ALPHA</h3>
-<p class="font-mono text-xs text-indigo-700 font-semibold mb-3">Mentor: Phước - An</p>
-<div class="p-2.5 rounded-xl bg-indigo-50/60 border border-indigo-100 text-xs space-y-1 mb-4">
-<div><strong class="text-blue-950">Đội trưởng:</strong> Vĩnh Hưng / Nguyễn Hưng (T)</div>
-<div><strong class="text-blue-950">Kỷ lục IQ:</strong> Hải Nam (74 điểm - Top 1)</div>
-</div>
-<div class="text-[11px] font-mono text-slate-600 leading-relaxed max-h-48 overflow-y-auto pr-1">
-<strong class="text-slate-800 block mb-1 font-bold">Danh sách thành viên:</strong>
-              1. Vĩnh Hưng / Nguyễn Hưng (T)<br/>
-              2. Trọng Huy<br/>
-              3. Nguyễn H.M. Nhật<br/>
-              4. Hoàng Đăng<br/>
-              5. Nguyễn M. Nhật (Minh Nhật)<br/>
-              6. Công Hưng (Hưng Phạm)<br/>
-              7. Ngọc Khánh<br/>
-              8. Thái Khánh Huyền<br/>
-              9. Hải Nam (Kỷ lục 74đ)<br/>
-              10. Phương Lan<br/>
-              11. Ái Mỹ<br/>
-              12. Nguyễn Thư
-            </div>
+<div class="text-[11px] text-slate-600 font-medium">Mentor: Bùi Minh - Văn Minh</div>
 </div>
 </div>
-<!-- Team W Card & Members -->
-<div class="rounded-2xl bg-white p-5 border-2 border-amber-200 shadow-sm flex flex-col justify-between">
+<div class="p-3 rounded-xl bg-blue-50/70 border border-blue-200 text-xs space-y-1 mb-4">
+<div class="text-[11px] text-slate-700 leading-tight">
+<strong class="text-blue-950">Morse T1:</strong> Xuân Nguyên (B+), Tuấn Anh (B+), Minh Toàn (B+), Hữu Tình (B+)
+                </div>
+</div>
+<div class="text-[11px] font-mono text-slate-700 max-h-48 overflow-y-auto pr-1 space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-200">
+<strong class="text-slate-900 block font-bold mb-1 border-b border-slate-200 pb-1">Danh sách thành viên (13):</strong>
+<div class="grid grid-cols-1 gap-1">
+<span class="">1. Xuân Nguyên (T)</span>
+<span class="">2. Tuấn Anh</span>
+<span class="">3. Trần Ngọc Như Ý</span>
+<span class="">4. Khánh Như</span>
+<span class="">5. Minh Toàn</span>
+<span class="">6. Trần Đình Nghĩa</span>
+<span class="">7. Hữu Tình</span>
+<span class="">8. Nguyễn Bá Toàn</span>
+<span class="">9. Quốc Đạt (Đạt Lê)</span>
+<span class="">10. Vũ Đại Dương</span>
+<span class="">11. Lê T.K. Huyền</span>
+<span class="">12. Lâm T.K. Huyền</span>
+<span class="">13. Quỳnh Anh</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- TEAM ALPHA (ROYAL PURPLE & INDIGO) -->
+<div class="rounded-3xl bg-white border-2 border-indigo-400 shadow-card-bold card-lift flex flex-col justify-between overflow-hidden relative">
+<!-- Team Header Graphic Banner -->
+<div class="h-28 bg-gradient-to-r from-indigo-800 via-indigo-700 to-purple-600 p-4 text-white relative flex flex-col justify-between">
+<div class="flex justify-between items-center z-10">
+<span class="px-2.5 py-0.5 rounded-full bg-indigo-200 text-indigo-950 font-mono text-[10px] font-black uppercase shadow">TOP 2 IQ (65.58)</span>
+<span class="font-mono text-xs font-black px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm">12 TV</span>
+</div>
+<div class="flex items-center justify-between z-10">
 <div>
-<div class="flex justify-between items-center mb-2">
-<span class="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800 uppercase">Top 3 IQ (65.27)</span>
-<span class="font-mono text-xs font-bold text-slate-400">13 TV</span>
+<h3 class="font-headline text-2xl font-black uppercase tracking-tight text-white drop-shadow">TEAM ALPHA</h3>
+<span class="font-mono text-[10px] text-indigo-200 uppercase font-bold tracking-wide">Royal Phoenix</span>
 </div>
-<h3 class="font-headline text-2xl font-black text-blue-950 uppercase">TEAM W</h3>
-<p class="font-mono text-xs text-amber-700 font-semibold mb-3">Mentor: Ngân - Viên</p>
-<div class="p-2.5 rounded-xl bg-amber-50/60 border border-amber-100 text-xs space-y-1 mb-4">
-<div><strong class="text-blue-950">Đội trưởng:</strong> Hoàng Vy (T)</div>
-<div><strong class="text-blue-950">Đột phá:</strong> Đức Duy (IQ 69, Morse C+)</div>
-</div>
-<div class="text-[11px] font-mono text-slate-600 leading-relaxed max-h-48 overflow-y-auto pr-1">
-<strong class="text-slate-800 block mb-1 font-bold">Danh sách thành viên:</strong>
-              1. Hoàng Vy (T)<br/>
-              2. Đức Duy<br/>
-              3. Văn Thành (IQ 71)<br/>
-              4. Diệu My<br/>
-              5. Hồ T. Yến Nhi<br/>
-              6. Bùi Thảo My<br/>
-              7. Văn Phúc<br/>
-              8. Thùy Trang (Nguyễn Võ Thùy Trang)<br/>
-              9. Chu Thảo<br/>
-              10. Tấn Đạt<br/>
-              11. Đậu Thùy Trang<br/>
-              12. Anh Quân<br/>
-              13. Trịnh Na
-            </div>
+<div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-2xl">local_fire_department</span>
 </div>
 </div>
-<!-- Team VTD Card & Members -->
-<div class="rounded-2xl bg-white p-5 border-2 border-blue-200 shadow-sm flex flex-col justify-between">
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
 <div>
-<div class="flex justify-between items-center mb-2">
-<span class="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800 uppercase">Top 4 IQ (64.46)</span>
-<span class="font-mono text-xs font-bold text-slate-400">13 TV</span>
+<!-- Mentor & Captain Badge -->
+<div class="flex items-center gap-2.5 p-2.5 rounded-xl bg-indigo-50 border border-indigo-200 mb-3">
+<img alt="Hải Nam / Vĩnh Hưng Avatar" class="w-8 h-8 rounded-full object-cover border border-indigo-400 shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1VC1vUvu_yNdlobhA-NGezsVlOSSlg_mMrsPoPe3pESj8Rt1Vwp-Oeyniq1zCB54jwo-jq7JPtgz335zXAiOvVhyaxoiysKP1JylBFSIcCVUSPYcVSymHiD9JE4iJQ_OJonGYtOriG5xK2Rkql8g09Myf14qWBBpvn5DKafxV0GuVSfM5WhtXqCWbzeHUrXwBMbMO1TZP5ChDnaMpcBqaQL2VyjmIYxBrBp4y7bSF2ESdbFrceI3LgiivpE">
+<div class="text-xs">
+<div class="font-mono font-black text-indigo-950 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-indigo-600">military_tech</span>
+<span class="">Vĩnh Hưng / Nguyễn Hưng (T)</span>
 </div>
-<h3 class="font-headline text-2xl font-black text-blue-950 uppercase">TEAM VTD</h3>
-<p class="font-mono text-xs text-blue-700 font-semibold mb-3">Mentor: Tiến - Vinh</p>
-<div class="p-2.5 rounded-xl bg-blue-50/60 border border-blue-100 text-xs space-y-1 mb-4">
-<div><strong class="text-blue-950">Đội trưởng:</strong> Hồ Đắc Thành Đạt (T)</div>
-<div><strong class="text-blue-950">Đỉnh Morse:</strong> Thành Đạt (A+ duy nhất)</div>
+<div class="text-[11px] text-slate-600 font-medium">Mentor: Phước - An</div>
 </div>
-<div class="text-[11px] font-mono text-slate-600 leading-relaxed max-h-48 overflow-y-auto pr-1">
-<strong class="text-slate-800 block mb-1 font-bold">Danh sách thành viên:</strong>
-              1. Hồ Đắc Thành Đạt (T)<br/>
-              2. Nguyễn Thị Quỳnh<br/>
-              3. Lê Nho Truyền (Morse B+)<br/>
-              4. Mai Thị Thanh Huyền (Morse B+)<br/>
-              5. Minh Ngọc<br/>
-              6. Lê Thảo My<br/>
-              7. Trúc Huệ<br/>
-              8. Thảo Vy<br/>
-              9. Nguyễn Ngọc Duy<br/>
-              10. Thiên Phú (Morse B+)<br/>
-              11. Huỳnh Tú / Hương Tú<br/>
-              12. Trúc Mai<br/>
-              13. Trường Thành
-            </div>
+</div>
+<div class="p-3 rounded-xl bg-indigo-50/70 border border-indigo-200 text-xs space-y-1 mb-4">
+<div class="text-[11px] text-slate-700 leading-tight">
+<strong class="text-indigo-950">Kỷ lục IQ:</strong> <span class="font-bold text-indigo-700">Hải Nam (74 điểm - Top 1 Toàn Giải)</span>
+</div>
+</div>
+<div class="text-[11px] font-mono text-slate-700 max-h-48 overflow-y-auto pr-1 space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-200">
+<strong class="text-slate-900 block font-bold mb-1 border-b border-slate-200 pb-1">Danh sách thành viên (12):</strong>
+<div class="grid grid-cols-1 gap-1">
+<span class="">1. Vĩnh Hưng / Nguyễn Hưng (T)</span>
+<span class="">2. Trọng Huy</span>
+<span class="">3. Nguyễn H.M. Nhật</span>
+<span class="">4. Hoàng Đăng</span>
+<span class="">5. Nguyễn M. Nhật (Minh Nhật)</span>
+<span class="">6. Công Hưng (Hưng Phạm)</span>
+<span class="">7. Ngọc Khánh</span>
+<span class="">8. Thái Khánh Huyền</span>
+<span class="">9. Hải Nam (Kỷ lục 74đ)</span>
+<span class="">10. Phương Lan</span>
+<span class="">11. Ái Mỹ</span>
+<span class="">12. Nguyễn Thư</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- TEAM W (BLAZING AMBER) -->
+<div class="rounded-3xl bg-white border-2 border-amber-400 shadow-card-bold card-lift flex flex-col justify-between overflow-hidden relative">
+<!-- Team Header Graphic Banner -->
+<div class="h-28 bg-gradient-to-r from-amber-600 via-orange-500 to-amber-500 p-4 text-white relative flex flex-col justify-between">
+<div class="flex justify-between items-center z-10">
+<span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-950 font-mono text-[10px] font-black uppercase shadow">TOP 3 IQ (65.27)</span>
+<span class="font-mono text-xs font-black px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm">13 TV</span>
+</div>
+<div class="flex items-center justify-between z-10">
+<div>
+<h3 class="font-headline text-2xl font-black uppercase tracking-tight text-white drop-shadow">TEAM W</h3>
+<span class="font-mono text-[10px] text-amber-100 uppercase font-bold tracking-wide">Solar Vanguard</span>
+</div>
+<div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-2xl">workspace_premium</span>
+</div>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<!-- Mentor & Captain Badge -->
+<div class="flex items-center gap-2.5 p-2.5 rounded-xl bg-amber-50 border border-amber-200 mb-3">
+<img alt="Hoàng Vy Avatar" class="w-8 h-8 rounded-full object-cover border border-amber-400 shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XwFJVu21RYCujAh5ZWce_znxY7VxaHNYWNmAA1LGeMIafpNBbIqE4eTAvAhhDTyiyyU5htadMKlCKqjBQdsSTFt44C4n0MvflP0yBX3sFrSnMo1npcOXJV2Wcch7B-jUDRkO9gY7Vz9Mg3MKnnMoGXJB_tckZtzFhvEzUplTEEQigmPPARc-WjGpN0kVBzbpLJc4pwVWnPToG10gnsYaJiBzAP-Fp-qteB2DvjN4LLGLjacKB6hKBIhNA">
+<div class="text-xs">
+<div class="font-mono font-black text-amber-950 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-amber-600">military_tech</span>
+<span class="">Hoàng Vy (T)</span>
+</div>
+<div class="text-[11px] text-slate-600 font-medium">Mentor: Ngân - Viên</div>
+</div>
+</div>
+<div class="p-3 rounded-xl bg-amber-50/70 border border-amber-200 text-xs space-y-1 mb-4">
+<div class="text-[11px] text-slate-700 leading-tight">
+<strong class="text-amber-950">Đột phá:</strong> <span class="font-bold text-amber-700">Đức Duy (IQ 69, Morse C+)</span>
+</div>
+</div>
+<div class="text-[11px] font-mono text-slate-700 max-h-48 overflow-y-auto pr-1 space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-200">
+<strong class="text-slate-900 block font-bold mb-1 border-b border-slate-200 pb-1">Danh sách thành viên (13):</strong>
+<div class="grid grid-cols-1 gap-1">
+<span class="">1. Hoàng Vy (T)</span>
+<span class="">2. Đức Duy</span>
+<span class="">3. Văn Thành (IQ 71)</span>
+<span class="">4. Diệu My</span>
+<span class="">5. Hồ T. Yến Nhi</span>
+<span class="">6. Bùi Thảo My</span>
+<span class="">7. Văn Phúc</span>
+<span class="">8. Thùy Trang (Nguyễn Võ Thùy Trang)</span>
+<span class="">9. Chu Thảo</span>
+<span class="">10. Tấn Đạt</span>
+<span class="">11. Đậu Thùy Trang</span>
+<span class="">12. Anh Quân</span>
+<span class="">13. Trịnh Na</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- TEAM VTD (EMERALD FALCON) -->
+<div class="rounded-3xl bg-white border-2 border-emerald-400 shadow-card-bold card-lift flex flex-col justify-between overflow-hidden relative">
+<!-- Team Header Graphic Banner -->
+<div class="h-28 bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-600 p-4 text-white relative flex flex-col justify-between">
+<div class="flex justify-between items-center z-10">
+<span class="px-2.5 py-0.5 rounded-full bg-emerald-200 text-emerald-950 font-mono text-[10px] font-black uppercase shadow">TOP 4 IQ (64.46)</span>
+<span class="font-mono text-xs font-black px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm">13 TV</span>
+</div>
+<div class="flex items-center justify-between z-10">
+<div>
+<h3 class="font-headline text-2xl font-black uppercase tracking-tight text-white drop-shadow">TEAM VTD</h3>
+<span class="font-mono text-[10px] text-emerald-200 uppercase font-bold tracking-wide">Emerald Titan</span>
+</div>
+<div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-2xl">shield</span>
+</div>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<!-- Mentor & Captain Badge -->
+<div class="flex items-center gap-2.5 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 mb-3">
+<img alt="Thành Đạt Avatar" class="w-8 h-8 rounded-full object-cover border border-emerald-400 shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1UyOj9Bhz_dsZdoOGP2UZoY3Kha0RssJO3q4BEei6mJB-L5VTgQlYZSm1HCR6KmtI1bFwAr7wTDVd9tKgoPKH7OyE-Rm-4XQgbYWSK9l3wG9rtt0l_lxbueS__wE80nB1f8IgKtdQcN77hVugrD3E4xYR9CFF0FFGEBqO0VbvBYSZUWLqI3eOke7Q5pzCPZDMBDcrRwNztFw6JlqIeOTukiBbxGmjIxKZSCZfECL2Mla2mepyhXDPwicNGa">
+<div class="text-xs">
+<div class="font-mono font-black text-emerald-950 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-emerald-600">military_tech</span>
+<span class="">Hồ Đắc Thành Đạt (T)</span>
+</div>
+<div class="text-[11px] text-slate-600 font-medium">Mentor: Tiến - Vinh</div>
+</div>
+</div>
+<div class="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200 text-xs space-y-1 mb-4">
+<div class="text-[11px] text-slate-700 leading-tight">
+<strong class="text-emerald-950">Đỉnh Morse:</strong> <span class="font-bold text-emerald-700">Thành Đạt (A+ duy nhất toàn đoàn)</span>
+</div>
+</div>
+<div class="text-[11px] font-mono text-slate-700 max-h-48 overflow-y-auto pr-1 space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-200">
+<strong class="text-slate-900 block font-bold mb-1 border-b border-slate-200 pb-1">Danh sách thành viên (13):</strong>
+<div class="grid grid-cols-1 gap-1">
+<span class="">1. Hồ Đắc Thành Đạt (T)</span>
+<span class="">2. Nguyễn Thị Quỳnh</span>
+<span class="">3. Lê Nho Truyền (Morse B+)</span>
+<span class="">4. Mai Thị Thanh Huyền (Morse B+)</span>
+<span class="">5. Minh Ngọc</span>
+<span class="">6. Lê Thảo My</span>
+<span class="">7. Trúc Huệ</span>
+<span class="">8. Thảo Vy</span>
+<span class="">9. Nguyễn Ngọc Duy</span>
+<span class="">10. Thiên Phú (Morse B+)</span>
+<span class="">11. Huỳnh Tú / Hương Tú</span>
+<span class="">12. Trúc Mai</span>
+<span class="">13. Trường Thành</span>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 </section>
-<!-- SECTION: TIMELINE CHƯƠNG TRÌNH (HỆ THỐNG 4 VÒNG THI ĐẤU KHẮC NGHIỆT) -->
+<!-- SECTION: TIMELINE CHƯƠNG TRÌNH (4 VÒNG THI ĐẤU KHẮC NGHIỆT - TOURNAMENT STAGES) -->
 <section class="w-full px-4 sm:px-8 py-16 bg-white" id="timeline">
 <div class="max-w-7xl mx-auto">
 <div class="text-center max-w-3xl mx-auto mb-12">
-<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-100 border border-sky-300 text-sky-900 font-mono text-xs font-extrabold uppercase mb-3">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-100 border border-blue-400 text-blue-950 font-mono text-xs font-black uppercase mb-3 shadow-sm">
+<span class="material-symbols-outlined text-sm text-blue-600">alt_route</span>
           QUY CHẾ THI ĐẤU CHÍNH THỨC 2026
         </div>
-<h2 class="font-headline text-3xl sm:text-4xl font-black uppercase text-blue-950 tracking-tight">
+<h2 class="font-headline text-3xl sm:text-4xl font-black uppercase text-[#001c38] tracking-tight">
           HỆ THỐNG 4 VÒNG THI ĐẤU KHẮC NGHIỆT
         </h2>
-<p class="font-body text-slate-600 text-sm mt-2">
+<p class="font-body text-slate-600 text-sm mt-2 font-medium">
           Lộ trình 4 giai đoạn chuẩn hoá sát hạch toàn diện từ tư duy logic, phản xạ tốc độ cao đến thực chiến thao trường và trò chơi lớn dã ngoại.
         </p>
 </div>
-<!-- 4 Cards Grid matching Image 4 -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-<!-- Vòng 1 -->
-<div class="rounded-2xl bg-white border-2 border-emerald-400 p-6 shadow-sm flex flex-col justify-between relative">
-<div>
+<!-- VÒNG 1 -->
+<div class="rounded-3xl bg-white border-2 border-emerald-400 p-6 shadow-card-bold card-lift flex flex-col justify-between relative overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-0"></div>
+<div class="relative z-10">
 <div class="flex items-center justify-between mb-4">
 <span class="font-mono text-xs font-black text-emerald-800 uppercase tracking-wider">VÒNG 1 • GIAI ĐOẠN 01</span>
-<span class="px-2.5 py-0.5 rounded-md bg-emerald-500 text-white font-mono text-[10px] font-bold uppercase">HOÀN THÀNH</span>
+<span class="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white font-mono text-[10px] font-bold uppercase shadow">HOÀN THÀNH</span>
+</div>
+<div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-3 shadow-inner">
+<span class="material-symbols-outlined text-2xl">verified</span>
 </div>
 <h3 class="font-headline text-xl font-black text-blue-950 uppercase mb-2">ĐẤU SƠ LOẠI TOÀN DIỆN</h3>
-<p class="font-body text-xs text-slate-600 mb-4">Sát hạch đầu vào với 5 bài test độc lập đánh giá chuẩn xác toàn bộ năng lực tư duy và kỹ năng nền tảng.</p>
+<p class="font-body text-xs text-slate-600 mb-4 font-medium">Sát hạch đầu vào với 5 bài test độc lập đánh giá chuẩn xác toàn bộ năng lực tư duy và kỹ năng nền tảng.</p>
 <div class="space-y-2.5 font-body text-xs">
-<div class="p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
-<strong class="text-emerald-900 block font-semibold mb-0.5">• Test IQ:</strong>
+<div class="p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200">
+<strong class="text-emerald-950 block font-bold mb-0.5">• Test IQ:</strong>
 <span class="text-slate-600">Chuỗi số logic, chuỗi hình học, xếp màu ma trận, suy luận hình không gian.</span>
 </div>
-<div class="p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
-<strong class="text-emerald-900 block font-semibold mb-0.5">• Test Độ Nhanh Nhạy:</strong>
+<div class="p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200">
+<strong class="text-emerald-950 block font-bold mb-0.5">• Test Độ Nhanh Nhạy:</strong>
 <span class="text-slate-600">Tìm điểm khác biệt, phản xạ quang học tốc độ cao, phản ứng chớp nhoáng.</span>
 </div>
-<div class="p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
-<strong class="text-emerald-900 block font-semibold mb-0.5">• Test Morse (3 Tốc Độ):</strong>
+<div class="p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200">
+<strong class="text-emerald-950 block font-bold mb-0.5">• Test Morse (3 Tốc Độ):</strong>
 <span class="text-slate-600">3 cấp độ tăng dần, <span class="text-red-600 font-bold">1 phút nộp bài, 1 lần duy nhất!</span></span>
 </div>
-<div class="p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
-<strong class="text-emerald-900 block font-semibold mb-0.5">• Test Semaphore (3 Tốc Độ):</strong>
+<div class="p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200">
+<strong class="text-emerald-950 block font-bold mb-0.5">• Test Semaphore (3 Tốc Độ):</strong>
 <span class="text-slate-600">3 tốc độ góc cờ, <span class="text-red-600 font-bold">1 phút nộp bài, 1 lần duy nhất!</span></span>
 </div>
-<div class="p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
-<strong class="text-emerald-900 block font-semibold mb-0.5">• Test Mật Thư:</strong>
+<div class="p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200">
+<strong class="text-emerald-950 block font-bold mb-0.5">• Test Mật Thư:</strong>
 <span class="text-slate-600">Chuỗi 5 mật thư giải mã liên hoàn (Caesar, Thay thế, Tọa độ...).</span>
 </div>
 </div>
 </div>
-<div class="mt-6 pt-4 border-t border-emerald-100 flex items-center justify-between font-mono text-xs text-emerald-700 font-bold">
-<span>TRẠNG THÁI: HOÀN TẤT</span>
-<span class="material-symbols-outlined text-base">check_circle</span>
+<div class="mt-6 pt-4 border-t border-emerald-100 flex items-center justify-between font-mono text-xs text-emerald-700 font-black">
+<span class="">TRẠNG THÁI: HOÀN TẤT</span>
+<span class="material-symbols-outlined text-lg">check_circle</span>
 </div>
 </div>
-<!-- Vòng 2 -->
-<div class="rounded-2xl bg-white border-2 border-cyan-400 p-6 shadow-md flex flex-col justify-between relative ring-2 ring-cyan-400/20">
-<div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-cyan-600 text-white font-mono text-[10px] font-black uppercase rounded-full shadow">
+<!-- VÒNG 2 -->
+<div class="rounded-3xl bg-white border-2 border-cyan-400 p-6 shadow-neon-cyan card-lift flex flex-col justify-between relative overflow-hidden ring-2 ring-cyan-400/30">
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3.5 py-0.5 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-mono text-[10px] font-black uppercase rounded-full shadow-md z-20">
             ★ ĐANG DIỄN RA LIVE ★
           </div>
-<div>
+<div class="relative z-10">
 <div class="flex items-center justify-between mb-4 mt-1">
 <span class="font-mono text-xs font-black text-cyan-800 uppercase tracking-wider">VÒNG 2 • GIAI ĐOẠN 02</span>
-<span class="px-2.5 py-0.5 rounded-md bg-cyan-500 text-white font-mono text-[10px] font-bold uppercase animate-pulse">LIVE</span>
+<span class="px-2.5 py-0.5 rounded-full bg-cyan-500 text-white font-mono text-[10px] font-bold uppercase animate-pulse shadow">LIVE</span>
+</div>
+<div class="w-12 h-12 rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center mb-3 shadow-inner">
+<span class="material-symbols-outlined text-2xl">speed</span>
 </div>
 <h3 class="font-headline text-xl font-black text-blue-950 uppercase mb-2">ĐẤU TRÍ ĐỐI KHÁNG TĂNG TỐC</h3>
-<p class="font-body text-xs text-slate-600 mb-4">Cấu trúc bài thi tương tự Vòng 1 với cấp độ khó tăng vọt, thử thách áp lực tâm lý cực hạn.</p>
+<p class="font-body text-xs text-slate-600 mb-4 font-medium">Cấu trúc bài thi tương tự Vòng 1 với cấp độ khó tăng vọt, thử thách áp lực tâm lý cực hạn.</p>
 <div class="space-y-2.5 font-body text-xs">
-<div class="p-2.5 rounded-xl bg-cyan-50/70 border border-cyan-100">
-<strong class="text-cyan-900 block font-semibold mb-0.5">• Test Morse Nâng Cao:</strong>
+<div class="p-2.5 rounded-xl bg-cyan-50/80 border border-cyan-200">
+<strong class="text-cyan-950 block font-bold mb-0.5">• Test Morse Nâng Cao:</strong>
 <span class="text-slate-600">Bản tin dài, chèn tạp âm gió bão thao trường, <span class="text-red-600 font-bold">1 phút / 1 lần nộp!</span></span>
 </div>
-<div class="p-2.5 rounded-xl bg-cyan-50/70 border border-cyan-100">
-<strong class="text-cyan-900 block font-semibold mb-0.5">• Test Semaphore Nâng Cao:</strong>
+<div class="p-2.5 rounded-xl bg-cyan-50/80 border border-cyan-200">
+<strong class="text-cyan-950 block font-bold mb-0.5">• Test Semaphore Nâng Cao:</strong>
 <span class="text-slate-600">Cự ly nhìn xa 250m - 400m, góc quay cờ chéo, <span class="text-red-600 font-bold">1 phút / 1 lần nộp!</span></span>
 </div>
-<div class="p-2.5 rounded-xl bg-cyan-50/70 border border-cyan-100">
-<strong class="text-cyan-900 block font-semibold mb-0.5">• Test Mật Thư Nâng Cao:</strong>
+<div class="p-2.5 rounded-xl bg-cyan-50/80 border border-cyan-200">
+<strong class="text-cyan-950 block font-bold mb-0.5">• Test Mật Thư Nâng Cao:</strong>
 <span class="text-slate-600">Chuỗi 5 mật thư ma trận đa tầng, phân tầng khóa kép cực khó.</span>
 </div>
-<div class="p-2.5 rounded-xl bg-cyan-50/70 border border-cyan-100">
-<strong class="text-cyan-900 block font-semibold mb-0.5">• Áp Lực Thời Gian:</strong>
+<div class="p-2.5 rounded-xl bg-cyan-50/80 border border-cyan-200">
+<strong class="text-cyan-950 block font-bold mb-0.5">• Áp Lực Thời Gian:</strong>
 <span class="text-slate-600">Quy tắc chốt đáp án trong 1 phút duy nhất, không sửa đổi.</span>
 </div>
 </div>
 </div>
-<div class="mt-6 pt-4 border-t border-cyan-100 flex items-center justify-between font-mono text-xs text-cyan-700 font-bold">
-<span>TRẠNG THÁI: TRANH TÀI TUẦN 2</span>
-<span class="material-symbols-outlined text-base animate-spin">sync</span>
+<div class="mt-6 pt-4 border-t border-cyan-100 flex items-center justify-between font-mono text-xs text-cyan-700 font-black">
+<span class="">TRẠNG THÁI: TRANH TÀI TUẦN 2</span>
+<span class="material-symbols-outlined text-lg animate-spin">sync</span>
 </div>
 </div>
-<!-- Vòng 3 -->
-<div class="rounded-2xl bg-white border-2 border-indigo-300 p-6 shadow-sm flex flex-col justify-between relative">
-<div>
+<!-- VÒNG 3 -->
+<div class="rounded-3xl bg-white border-2 border-indigo-300 p-6 shadow-card-bold card-lift flex flex-col justify-between relative overflow-hidden">
+<div class="relative z-10">
 <div class="flex items-center justify-between mb-4">
 <span class="font-mono text-xs font-black text-indigo-800 uppercase tracking-wider">VÒNG 3 • GIAI ĐOẠN 03</span>
-<span class="px-2.5 py-0.5 rounded-md bg-indigo-600 text-white font-mono text-[10px] font-bold uppercase">KHỞI TRANH TUẦN TỚI</span>
+<span class="px-2.5 py-0.5 rounded-full bg-indigo-600 text-white font-mono text-[10px] font-bold uppercase shadow">TUẦN TỚI</span>
+</div>
+<div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center mb-3 shadow-inner">
+<span class="material-symbols-outlined text-2xl">explore</span>
 </div>
 <h3 class="font-headline text-xl font-black text-blue-950 uppercase mb-2">TRÒ CHƠI LỚN MINI TẠI CHỖ</h3>
-<p class="font-body text-xs text-slate-600 mb-4">Thi đấu thực chiến kỹ năng phối hợp tại thao trường tập trung (Mini Station Games) thử lửa trước thềm đại chiến.</p>
+<p class="font-body text-xs text-slate-600 mb-4 font-medium">Thi đấu thực chiến kỹ năng phối hợp tại thao trường tập trung (Mini Station Games) thử lửa trước thềm đại chiến.</p>
 <div class="space-y-2.5 font-body text-xs">
-<div class="p-2.5 rounded-xl bg-indigo-50/60 border border-indigo-100">
-<strong class="text-indigo-900 block font-semibold mb-0.5">• Giải Trạm Nhanh:</strong>
+<div class="p-2.5 rounded-xl bg-indigo-50/80 border border-indigo-200">
+<strong class="text-indigo-950 block font-bold mb-0.5">• Giải Trạm Nhanh:</strong>
 <span class="text-slate-600">6 trạm kỹ năng liên hoàn xử lý cờ lệnh &amp; âm hiệu còi tức thì.</span>
 </div>
-<div class="p-2.5 rounded-xl bg-indigo-50/60 border border-indigo-100">
-<strong class="text-indigo-900 block font-semibold mb-0.5">• Liên Lạc Vô Tuyến Mini:</strong>
+<div class="p-2.5 rounded-xl bg-indigo-50/80 border border-indigo-200">
+<strong class="text-indigo-950 block font-bold mb-0.5">• Liên Lạc Vô Tuyến Mini:</strong>
 <span class="text-slate-600">Phát nhận tín hiệu định tuyến thực địa giữa các chốt chặn.</span>
 </div>
-<div class="p-2.5 rounded-xl bg-indigo-50/60 border border-indigo-100">
-<strong class="text-indigo-900 block font-semibold mb-0.5">• Tình Huống Khẩn Cấp:</strong>
+<div class="p-2.5 rounded-xl bg-indigo-50/80 border border-indigo-200">
+<strong class="text-indigo-950 block font-bold mb-0.5">• Tình Huống Khẩn Cấp:</strong>
 <span class="text-slate-600">Sơ cấp cứu dã ngoại &amp; giải mã tọa độ định vị GPS.</span>
 </div>
-<div class="p-2.5 rounded-xl bg-indigo-50/60 border border-indigo-100">
-<strong class="text-indigo-900 block font-semibold mb-0.5">• Sức Bền Thao Trường:</strong>
+<div class="p-2.5 rounded-xl bg-indigo-50/80 border border-indigo-200">
+<strong class="text-indigo-950 block font-bold mb-0.5">• Sức Bền Thao Trường:</strong>
 <span class="text-slate-600">Đánh giá bản lĩnh, kỷ luật thép và độ lì lợm cá nhân.</span>
 </div>
 </div>
 </div>
-<div class="mt-6 pt-4 border-t border-indigo-100 flex items-center justify-between font-mono text-xs text-indigo-700 font-bold">
-<span>TRẠNG THÁI: THIẾT LẬP TRẠM</span>
-<span class="material-symbols-outlined text-base">build</span>
+<div class="mt-6 pt-4 border-t border-indigo-100 flex items-center justify-between font-mono text-xs text-indigo-700 font-black">
+<span class="">TRẠNG THÁI: THIẾT LẬP TRẠM</span>
+<span class="material-symbols-outlined text-lg">build</span>
 </div>
 </div>
-<!-- Vòng 4 -->
-<div class="rounded-2xl bg-white border-2 border-amber-400 p-6 shadow-sm flex flex-col justify-between relative">
-<div>
+<!-- VÒNG 4 -->
+<div class="rounded-3xl bg-white border-2 border-amber-400 p-6 shadow-card-bold card-lift flex flex-col justify-between relative overflow-hidden">
+<div class="relative z-10">
 <div class="flex items-center justify-between mb-4">
 <span class="font-mono text-xs font-black text-amber-800 uppercase tracking-wider">VÒNG 4 • CHUNG KẾT</span>
-<span class="px-2.5 py-0.5 rounded-md bg-amber-500 text-blue-950 font-mono text-[10px] font-black uppercase">ĐẾM NGƯỢC 7 NGÀY</span>
+<span class="px-2.5 py-0.5 rounded-full bg-amber-400 text-blue-950 font-mono text-[10px] font-black uppercase shadow">7 NGÀY TỚI</span>
+</div>
+<div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mb-3 shadow-inner">
+<span class="material-symbols-outlined text-2xl">trophy</span>
 </div>
 <h3 class="font-headline text-xl font-black text-blue-950 uppercase mb-2">CHUNG KẾT TRÒ CHƠI LỚN</h3>
-<p class="font-body text-xs text-slate-600 mb-4">Hành trình thực địa xuyên địa hình quy mô lớn. Đỉnh cao đối đầu tranh đoạt cúp vàng vinh quang DKS.</p>
+<p class="font-body text-xs text-slate-600 mb-4 font-medium">Hành trình thực địa xuyên địa hình quy mô lớn. Đỉnh cao đối đầu tranh đoạt cúp vàng vinh quang DKS.</p>
 <div class="space-y-2.5 font-body text-xs">
-<div class="p-2.5 rounded-xl bg-amber-50/60 border border-amber-100">
-<strong class="text-amber-900 block font-semibold mb-0.5">• Trò Chơi Lớn Thực Địa:</strong>
+<div class="p-2.5 rounded-xl bg-amber-50/80 border border-amber-200">
+<strong class="text-amber-950 block font-bold mb-0.5">• Trò Chơi Lớn Thực Địa:</strong>
 <span class="text-slate-600">15 trạm kiểm soát dã ngoại, vượt rừng thâm du xuyên đêm.</span>
 </div>
-<div class="p-2.5 rounded-xl bg-amber-50/60 border border-amber-100">
-<strong class="text-amber-900 block font-semibold mb-0.5">• Tích Lũy Điểm Cá Nhân:</strong>
+<div class="p-2.5 rounded-xl bg-amber-50/80 border border-amber-200">
+<strong class="text-amber-950 block font-bold mb-0.5">• Tích Lũy Điểm Cá Nhân:</strong>
 <span class="text-slate-600">Mọi thử thách đều được chấm điểm chi tiết từng cá nhân.</span>
 </div>
-<div class="p-2.5 rounded-xl bg-amber-50/60 border border-amber-100">
-<strong class="text-amber-900 block font-semibold mb-0.5">• Phân Cấp Rank:</strong>
-<span class="text-slate-600">Xếp bậc chuẩn hóa 5 cấp <span class="font-bold text-amber-700">Rank S - A - B - C - D</span>.</span>
+<div class="p-2.5 rounded-xl bg-amber-50/80 border border-amber-200">
+<strong class="text-amber-950 block font-bold mb-0.5">• Phân Cấp Rank:</strong>
+<span class="text-slate-600">Xếp bậc chuẩn hóa 5 cấp <span class="font-bold text-amber-800">Rank S - A - B - C - D</span>.</span>
 </div>
-<div class="p-2.5 rounded-xl bg-amber-50/60 border border-amber-100">
-<strong class="text-amber-900 block font-semibold mb-0.5">• Định Đoạt Ngôi Vương:</strong>
+<div class="p-2.5 rounded-xl bg-amber-50/80 border border-amber-200">
+<strong class="text-amber-950 block font-bold mb-0.5">• Định Đoạt Ngôi Vương:</strong>
 <span class="text-slate-600">Tỷ lệ 50/50 quyết định giải Nhất Đồng Đội Toàn Đoàn.</span>
 </div>
 </div>
 </div>
-<div class="mt-6 pt-4 border-t border-amber-100 flex items-center justify-between font-mono text-xs text-amber-700 font-bold">
-<span>TRẠNG THÁI: SẮP KHỞI TRANH</span>
-<span class="material-symbols-outlined text-base">flag</span>
+<div class="mt-6 pt-4 border-t border-amber-100 flex items-center justify-between font-mono text-xs text-amber-700 font-black">
+<span class="">TRẠNG THÁI: SẮP KHỞI TRANH</span>
+<span class="material-symbols-outlined text-lg">flag</span>
 </div>
 </div>
 </div>
 </div>
 </section>
-<!-- SECTION: WEEKLY HALL OF FAME (VINH DANH TUẦN 1 THỰC TẾ) -->
-<section class="w-full px-4 sm:px-8 py-16 bg-[#f4f8fd] border-y border-sky-100" id="hall-of-fame">
+<!-- SECTION: WEEKLY HALL OF FAME (VINH DANH TUẦN 1 - AVATAR CHÂN THỰC & RỰC RỠ) -->
+<section class="w-full px-4 sm:px-8 py-16 bg-gradient-to-b from-[#eaf2ff] via-[#dceaff] to-[#eaf2ff] border-y-2 border-blue-200" id="hall-of-fame">
 <div class="max-w-7xl mx-auto text-center">
-<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-100 border border-sky-300 text-blue-900 font-mono text-xs font-bold uppercase mb-3">
-<span class="material-symbols-outlined text-base text-amber-500">workspace_premium</span>
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 border border-amber-400 text-amber-900 font-mono text-xs font-black uppercase mb-3 shadow-sm">
+<span class="material-symbols-outlined text-base text-amber-600">workspace_premium</span>
         BẢNG VINH DANH CHIẾN BINH XUẤT SẮC TUẦN 1
       </div>
 <h2 class="font-headline text-3xl sm:text-4xl font-black uppercase text-blue-950">WEEKLY HALL OF FAME • TUẦN 1</h2>
-<p class="font-body text-slate-600 text-sm max-w-xl mx-auto mt-2 mb-10">
+<p class="font-body text-slate-700 text-sm max-w-xl mx-auto mt-2 mb-12 font-medium">
         Ghi nhận các chiến binh đạt thành tích bứt phá tại bài sát hạch Mã Morse, Cờ Semaphore và Test IQ Tuần 1.
       </p>
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
 <!-- 1. Hồ Đắc Thành Đạt -->
-<div class="p-5 rounded-2xl bg-gradient-to-b from-blue-50 to-white border-2 border-blue-400 shadow-sm flex flex-col justify-between">
-<div>
-<div class="flex items-center justify-between mb-3">
-<span class="font-mono text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-800">KỶ LỤC MORSE A+</span>
-<span class="material-symbols-outlined text-blue-600">sensors</span>
+<div class="p-6 rounded-3xl bg-gradient-to-b from-blue-50 via-white to-white border-2 border-blue-400 shadow-neon-blue card-lift flex flex-col justify-between relative group overflow-hidden">
+<div class="absolute -right-6 -top-6 w-28 h-28 bg-blue-500/15 rounded-full blur-md group-hover:scale-125 transition-transform duration-500"></div>
+<div class="relative z-10">
+<div class="flex items-center justify-between mb-4">
+<span class="font-mono text-[10px] font-black uppercase px-3 py-1 rounded-full bg-blue-600 text-white shadow-sm border border-blue-400 tracking-wide">
+                KỶ LỤC MORSE A+
+              </span>
+<div class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shadow-inner border border-blue-200">
+<span class="material-symbols-outlined text-xl">sensors</span>
 </div>
-<div class="flex items-center gap-3 mb-3">
-<img alt="Hồ Đắc Thành Đạt" class="w-12 h-12 rounded-full object-cover border-2 border-blue-400 shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1UyOj9Bhz_dsZdoOGP2UZoY3Kha0RssJO3q4BEei6mJB-L5VTgQlYZSm1HCR6KmtI1bFwAr7wTDVd9tKgoPKH7OyE-Rm-4XQgbYWSK9l3wG9rtt0l_lxbueS__wE80nB1f8IgKtdQcN77hVugrD3E4xYR9CFF0FFGEBqO0VbvBYSZUWLqI3eOke7Q5pzCPZDMBDcrRwNztFw6JlqIeOTukiBbxGmjIxKZSCZfECL2Mla2mepyhXDPwicNGa"/>
+</div>
+<div class="flex items-center gap-3.5 mb-4">
+<div class="relative shrink-0">
+<img alt="Hồ Đắc Thành Đạt" class="w-16 h-16 rounded-2xl object-cover border-2 border-blue-600 shadow-md ring-2 ring-blue-300/60" src="https://lh3.googleusercontent.com/aida/AEtjO1UyOj9Bhz_dsZdoOGP2UZoY3Kha0RssJO3q4BEei6mJB-L5VTgQlYZSm1HCR6KmtI1bFwAr7wTDVd9tKgoPKH7OyE-Rm-4XQgbYWSK9l3wG9rtt0l_lxbueS__wE80nB1f8IgKtdQcN77hVugrD3E4xYR9CFF0FFGEBqO0VbvBYSZUWLqI3eOke7Q5pzCPZDMBDcrRwNztFw6JlqIeOTukiBbxGmjIxKZSCZfECL2Mla2mepyhXDPwicNGa">
+<span class="absolute -bottom-2 -right-2 w-6 h-6 rounded-full bg-amber-400 text-blue-950 text-xs font-black flex items-center justify-center shadow border-2 border-white">1</span>
+</div>
 <div>
 <h4 class="font-headline text-base font-black text-blue-950 uppercase leading-snug">HỒ ĐẮC THÀNH ĐẠT</h4>
-<p class="font-mono text-xs text-blue-600">Team VTD • Đội trưởng</p>
+<p class="font-mono text-xs text-blue-700 font-extrabold">Team VTD • Đội trưởng</p>
+<span class="inline-block mt-0.5 px-2 py-0.5 rounded bg-blue-100 text-blue-900 text-[10px] font-mono font-bold border border-blue-200">Điểm tổng: 351</span>
 </div>
 </div>
-<div class="p-2.5 rounded-xl bg-white border border-sky-100 space-y-1 text-xs mb-2 font-mono">
-<div class="flex justify-between"><span>Morse Tuần 1:</span><strong class="text-blue-700">HẠNG A+ (Top 1)</strong></div>
-<div class="flex justify-between"><span>Semaphore:</span><strong class="text-amber-700">HẠNG A</strong></div>
-<div class="flex justify-between"><span>Test IQ:</span><strong class="text-slate-800">66 Điểm</strong></div>
+<div class="p-3.5 rounded-2xl bg-blue-50/90 border border-blue-200 space-y-2 text-xs mb-3 font-mono shadow-inner">
+<div class="flex justify-between items-center">
+<span class="text-slate-600">Morse Tuần 1:</span>
+<span class="px-2 py-0.5 rounded bg-blue-600 text-white font-black text-[11px] shadow-sm">HẠNG A+ (Top 1)</span>
 </div>
-<p class="font-body text-xs text-slate-500">Đấu thủ duy nhất toàn giải đạt chuẩn tuyệt đối A+ ở bài kiểm tra Morse Tuần 1.</p>
+<div class="flex justify-between items-center">
+<span class="text-slate-600">Semaphore:</span>
+<span class="font-black text-amber-700">HẠNG A</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-slate-600">Test IQ:</span>
+<span class="font-black text-slate-900">66 Điểm</span>
+</div>
+</div>
+<p class="font-body text-xs text-slate-700 leading-relaxed font-medium">Đấu thủ duy nhất toàn giải đạt chuẩn tuyệt đối A+ ở bài kiểm tra Morse Tuần 1.</p>
 </div>
 </div>
 <!-- 2. Hải Nam -->
-<div class="p-5 rounded-2xl bg-gradient-to-b from-cyan-50 to-white border-2 border-cyan-400 shadow-sm flex flex-col justify-between">
-<div>
-<div class="flex items-center justify-between mb-3">
-<span class="font-mono text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-cyan-100 text-cyan-800">KỶ LỤC TEST IQ 74Đ</span>
-<span class="material-symbols-outlined text-cyan-600">psychology</span>
+<div class="p-6 rounded-3xl bg-gradient-to-b from-cyan-50 via-white to-white border-2 border-cyan-400 shadow-neon-cyan card-lift flex flex-col justify-between relative group overflow-hidden ring-2 ring-cyan-400/30">
+<div class="absolute -right-6 -top-6 w-28 h-28 bg-cyan-500/15 rounded-full blur-md group-hover:scale-125 transition-transform duration-500"></div>
+<div class="relative z-10">
+<div class="flex items-center justify-between mb-4">
+<span class="font-mono text-[10px] font-black uppercase px-3 py-1 rounded-full bg-cyan-600 text-white shadow-sm border border-cyan-300 tracking-wide">
+                KỶ LỤC TEST IQ 74Đ
+              </span>
+<div class="w-8 h-8 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center shadow-inner border border-cyan-200">
+<span class="material-symbols-outlined text-xl">psychology</span>
 </div>
-<div class="flex items-center gap-3 mb-3">
-<img alt="Hải Nam" class="w-12 h-12 rounded-full object-cover border-2 border-cyan-400 shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1VC1vUvu_yNdlobhA-NGezsVlOSSlg_mMrsPoPe3pESj8Rt1Vwp-Oeyniq1zCB54jwo-jq7JPtgz335zXAiOvVhyaxoiysKP1JylBFSIcCVUSPYcVSymHiD9JE4iJQ_OJonGYtOriG5xK2Rkql8g09Myf14qWBBpvn5DKafxV0GuVSfM5WhtXqCWbzeHUrXwBMbMO1TZP5ChDnaMpcBqaQL2VyjmIYxBrBp4y7bSF2ESdbFrceI3LgiivpE"/>
+</div>
+<div class="flex items-center gap-3.5 mb-4">
+<div class="relative shrink-0">
+<img alt="Hải Nam" class="w-16 h-16 rounded-2xl object-cover border-2 border-cyan-500 shadow-md ring-2 ring-cyan-300/60" src="https://lh3.googleusercontent.com/aida/AEtjO1VC1vUvu_yNdlobhA-NGezsVlOSSlg_mMrsPoPe3pESj8Rt1Vwp-Oeyniq1zCB54jwo-jq7JPtgz335zXAiOvVhyaxoiysKP1JylBFSIcCVUSPYcVSymHiD9JE4iJQ_OJonGYtOriG5xK2Rkql8g09Myf14qWBBpvn5DKafxV0GuVSfM5WhtXqCWbzeHUrXwBMbMO1TZP5ChDnaMpcBqaQL2VyjmIYxBrBp4y7bSF2ESdbFrceI3LgiivpE">
+<span class="absolute -bottom-2 -right-2 w-6 h-6 rounded-full bg-slate-300 text-slate-950 text-xs font-black flex items-center justify-center shadow border-2 border-white">2</span>
+</div>
 <div>
 <h4 class="font-headline text-base font-black text-blue-950 uppercase leading-snug">HẢI NAM</h4>
-<p class="font-mono text-xs text-indigo-700">Team Alpha • Chiến binh</p>
+<p class="font-mono text-xs text-indigo-700 font-extrabold">Team Alpha • Chiến binh</p>
+<span class="inline-block mt-0.5 px-2 py-0.5 rounded bg-cyan-100 text-cyan-900 text-[10px] font-mono font-bold border border-cyan-200">Điểm tổng: 353</span>
 </div>
 </div>
-<div class="p-2.5 rounded-xl bg-white border border-sky-100 space-y-1 text-xs mb-2 font-mono">
-<div class="flex justify-between"><span>Test IQ Logic:</span><strong class="text-cyan-700">74 ĐIỂM (TOP 1)</strong></div>
-<div class="flex justify-between"><span>Morse:</span><strong class="text-blue-700">HẠNG B+</strong></div>
-<div class="flex justify-between"><span>Semaphore:</span><strong class="text-emerald-700">HẠNG A+</strong></div>
+<div class="p-3.5 rounded-2xl bg-cyan-50/90 border border-cyan-200 space-y-2 text-xs mb-3 font-mono shadow-inner">
+<div class="flex justify-between items-center">
+<span class="text-slate-600">Test IQ Logic:</span>
+<span class="px-2 py-0.5 rounded bg-cyan-600 text-white font-black text-[11px] shadow-sm">74 ĐIỂM (TOP 1)</span>
 </div>
-<p class="font-body text-xs text-slate-500">Giành điểm số IQ cao nhất trong tất cả 51 thí sinh, phối hợp cờ lệnh đạt mức xuất sắc A+.</p>
+<div class="flex justify-between items-center">
+<span class="text-slate-600">Morse:</span>
+<span class="font-black text-blue-700">HẠNG B+</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-slate-600">Semaphore:</span>
+<span class="font-black text-emerald-700">HẠNG A+</span>
+</div>
+</div>
+<p class="font-body text-xs text-slate-700 leading-relaxed font-medium">Giành điểm số IQ cao nhất trong tất cả 51 thí sinh, phối hợp cờ lệnh đạt mức xuất sắc A+.</p>
 </div>
 </div>
 <!-- 3. Nguyễn Xuân Nguyên -->
-<div class="p-5 rounded-2xl bg-gradient-to-b from-amber-50 to-white border-2 border-amber-300 shadow-sm flex flex-col justify-between">
-<div>
-<div class="flex items-center justify-between mb-3">
-<span class="font-mono text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-800">THỦ LĨNH TOÀN DIỆN</span>
-<span class="material-symbols-outlined text-amber-500">military_tech</span>
+<div class="p-6 rounded-3xl bg-gradient-to-b from-amber-50 via-white to-white border-2 border-amber-400 shadow-neon-amber card-lift flex flex-col justify-between relative group overflow-hidden">
+<div class="absolute -right-6 -top-6 w-28 h-28 bg-amber-500/15 rounded-full blur-md group-hover:scale-125 transition-transform duration-500"></div>
+<div class="relative z-10">
+<div class="flex items-center justify-between mb-4">
+<span class="font-mono text-[10px] font-black uppercase px-3 py-1 rounded-full bg-amber-500 text-blue-950 shadow-sm border border-amber-300 tracking-wide">
+                THỦ LĨNH TOÀN DIỆN
+              </span>
+<div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shadow-inner border border-amber-200">
+<span class="material-symbols-outlined text-xl">military_tech</span>
 </div>
-<div class="flex items-center gap-3 mb-3">
-<img alt="Nguyễn Xuân Nguyên" class="w-12 h-12 rounded-full object-cover border-2 border-amber-300 shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XAUiou-THBDT50-z9Wr6jKz2lngQYajb2M_fV0KTTBN6GLO5wZEI5PzaNmadNO9sLtKbWRVSeMUxQVvKOIq4NaKUsLxqNLZ03edHwOZi1jkTHgrkDfHF0JYHEwfVTbbepfPk6Qf57tWlUEPGi_WznqfzLLfdAkym84Xa-5nl8ZUFAqq8hhc8hnThg6aBzOLBC7e-dxJzaX4M9hzMU0dY-wm-jp7mt-Qtx_qbIzkKmpjoAZ1CM1P9miOLo"/>
+</div>
+<div class="flex items-center gap-3.5 mb-4">
+<div class="relative shrink-0">
+<img alt="Nguyễn Xuân Nguyên" class="w-16 h-16 rounded-2xl object-cover border-2 border-amber-400 shadow-md ring-2 ring-amber-300/60" src="https://lh3.googleusercontent.com/aida/AEtjO1XAUiou-THBDT50-z9Wr6jKz2lngQYajb2M_fV0KTTBN6GLO5wZEI5PzaNmadNO9sLtKbWRVSeMUxQVvKOIq4NaKUsLxqNLZ03edHwOZi1jkTHgrkDfHF0JYHEwfVTbbepfPk6Qf57tWlUEPGi_WznqfzLLfdAkym84Xa-5nl8ZUFAqq8hhc8hnThg6aBzOLBC7e-dxJzaX4M9hzMU0dY-wm-jp7mt-Qtx_qbIzkKmpjoAZ1CM1P9miOLo">
+<span class="absolute -bottom-2 -right-2 w-6 h-6 rounded-full bg-amber-200 text-amber-950 text-xs font-black flex items-center justify-center shadow border-2 border-white">3</span>
+</div>
 <div>
 <h4 class="font-headline text-base font-black text-blue-950 uppercase leading-snug">XUÂN NGUYÊN (T)</h4>
-<p class="font-mono text-xs text-amber-700">Team D2M • Đội trưởng</p>
+<p class="font-mono text-xs text-amber-700 font-extrabold">Team D2M • Đội trưởng</p>
+<span class="inline-block mt-0.5 px-2 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-mono font-bold border border-amber-200">Điểm tổng: 353</span>
 </div>
 </div>
-<div class="p-2.5 rounded-xl bg-white border border-sky-100 space-y-1 text-xs mb-2 font-mono">
-<div class="flex justify-between"><span>Test IQ:</span><strong class="text-amber-700">73 Điểm (Top 2)</strong></div>
-<div class="flex justify-between"><span>Morse:</span><strong class="text-blue-700">HẠNG B+</strong></div>
-<div class="flex justify-between"><span>Semaphore:</span><strong class="text-emerald-700">HẠNG A+</strong></div>
+<div class="p-3.5 rounded-2xl bg-amber-50/90 border border-amber-200 space-y-2 text-xs mb-3 font-mono shadow-inner">
+<div class="flex justify-between items-center">
+<span class="text-slate-600">Test IQ:</span>
+<span class="px-2 py-0.5 rounded bg-amber-500 text-blue-950 font-black text-[11px] shadow-sm">73 Điểm (Top 2)</span>
 </div>
-<p class="font-body text-xs text-slate-500">Thủ lĩnh Team D2M dẫn dắt đội dẫn đầu IQ toàn đoàn với phong độ xuất sắc đồng đều các nội dung.</p>
+<div class="flex justify-between items-center">
+<span class="text-slate-600">Morse:</span>
+<span class="font-black text-blue-700">HẠNG B+</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-slate-600">Semaphore:</span>
+<span class="font-black text-emerald-700">HẠNG A+</span>
 </div>
 </div>
-<!-- 4. Lê Nho Truyền & Thanh Huyền -->
-<div class="p-5 rounded-2xl bg-gradient-to-b from-emerald-50 to-white border-2 border-emerald-300 shadow-sm flex flex-col justify-between">
-<div>
-<div class="flex items-center justify-between mb-3">
-<span class="font-mono text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">CHIẾN BINH ƯU TÚ VTD</span>
-<span class="material-symbols-outlined text-emerald-600">stars</span>
+<p class="font-body text-xs text-slate-700 leading-relaxed font-medium">Thủ lĩnh Team D2M dẫn dắt đội dẫn đầu IQ toàn đoàn với phong độ xuất sắc đồng đều các nội dung.</p>
 </div>
-<div class="flex items-center gap-3 mb-3">
-<img alt="Lê Nho Truyền" class="w-12 h-12 rounded-full object-cover border-2 border-emerald-300 shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XwFJVu21RYCujAh5ZWce_znxY7VxaHNYWNmAA1LGeMIafpNBbIqE4eTAvAhhDTyiyyU5htadMKlCKqjBQdsSTFt44C4n0MvflP0yBX3sFrSnMo1npcOXJV2Wcch7B-jUDRkO9gY7Vz9Mg3MKnnMoGXJB_tckZtzFhvEzUplTEEQigmPPARc-WjGpN0kVBzbpLJc4pwVWnPToG10gnsYaJiBzAP-Fp-qteB2DvjN4LLGLjacKB6hKBIhNA"/>
+</div>
+<!-- 4. Lê Nho Truyền / Mai Thị Thanh Huyền -->
+<div class="p-6 rounded-3xl bg-gradient-to-b from-emerald-50 via-white to-white border-2 border-emerald-400 shadow-card-bold card-lift flex flex-col justify-between relative group overflow-hidden">
+<div class="absolute -right-6 -top-6 w-28 h-28 bg-emerald-500/15 rounded-full blur-md group-hover:scale-125 transition-transform duration-500"></div>
+<div class="relative z-10">
+<div class="flex items-center justify-between mb-4">
+<span class="font-mono text-[10px] font-black uppercase px-3 py-1 rounded-full bg-emerald-600 text-white shadow-sm border border-emerald-300 tracking-wide">
+                CHIẾN BINH ƯU TÚ VTD
+              </span>
+<div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shadow-inner border border-emerald-200">
+<span class="material-symbols-outlined text-xl">stars</span>
+</div>
+</div>
+<div class="flex items-center gap-3.5 mb-4">
+<div class="relative shrink-0">
+<img alt="Lê Nho Truyền / Thanh Huyền" class="w-16 h-16 rounded-2xl object-cover border-2 border-emerald-400 shadow-md ring-2 ring-emerald-300/60" src="https://lh3.googleusercontent.com/aida/AEtjO1XwFJVu21RYCujAh5ZWce_znxY7VxaHNYWNmAA1LGeMIafpNBbIqE4eTAvAhhDTyiyyU5htadMKlCKqjBQdsSTFt44C4n0MvflP0yBX3sFrSnMo1npcOXJV2Wcch7B-jUDRkO9gY7Vz9Mg3MKnnMoGXJB_tckZtzFhvEzUplTEEQigmPPARc-WjGpN0kVBzbpLJc4pwVWnPToG10gnsYaJiBzAP-Fp-qteB2DvjN4LLGLjacKB6hKBIhNA">
+<span class="absolute -bottom-2 -right-2 w-6 h-6 rounded-full bg-emerald-200 text-emerald-950 text-xs font-black flex items-center justify-center shadow border-2 border-white">4</span>
+</div>
 <div>
 <h4 class="font-headline text-base font-black text-blue-950 uppercase leading-snug">LÊ NHO TRUYỀN</h4>
-<p class="font-mono text-xs text-emerald-700">Team VTD • Morse B+ | Sema A+</p>
+<p class="font-mono text-xs text-emerald-700 font-extrabold">Team VTD • Morse B+ | Sema A+</p>
+<span class="inline-block mt-0.5 px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 text-[10px] font-mono font-bold border border-emerald-200">Điểm tổng: 347</span>
 </div>
 </div>
-<div class="p-2.5 rounded-xl bg-white border border-sky-100 space-y-1 text-xs mb-2 font-mono">
-<div class="flex justify-between"><span>Test IQ:</span><strong class="text-emerald-700">70 Điểm</strong></div>
-<div class="flex justify-between"><span>Đồng đội xuất sắc:</span><span class="text-slate-700">Thanh Huyền (B+/A+)</span></div>
-<div class="flex justify-between"><span>Thiên Phú:</span><span class="text-slate-700">Morse B+ | Sema A</span></div>
+<div class="p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200 space-y-2 text-xs mb-3 font-mono shadow-inner">
+<div class="flex justify-between items-center">
+<span class="text-slate-600">Test IQ:</span>
+<span class="font-black text-emerald-800">70 Điểm</span>
 </div>
-<p class="font-body text-xs text-slate-500">Bộ trụ cột kỹ năng vững chắc giúp Team VTD giữ phong độ rất cao ở bài thi thực hành cờ và âm hiệu.</p>
+<div class="flex justify-between items-center">
+<span class="text-slate-600">Đồng đội xuất sắc:</span>
+<span class="font-bold text-blue-900">Thanh Huyền (B+/A+)</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-slate-600">Thiên Phú:</span>
+<span class="font-bold text-slate-700">Morse B+ | Sema A</span>
+</div>
+</div>
+<p class="font-body text-xs text-slate-700 leading-relaxed font-medium">Bộ trụ cột kỹ năng vững chắc giúp Team VTD giữ phong độ rất cao ở bài thi thực hành cờ và âm hiệu.</p>
 </div>
 </div>
 </div>
 </div>
 </section>
-<!-- SECTION: BẢNG TỔNG SẮP ĐIỂM 51 THÍ SINH (CHÍNH THỨC TỪ CÁC BẢNG ĐIỂM) -->
+<!-- SECTION: BẢNG TỔNG SẮP ĐIỂM 51 THÍ SINH (ESPORTS TOURNAMENT LEADERBOARD) -->
 <section class="w-full px-4 sm:px-8 py-16 bg-white" id="leaderboard">
 <div class="max-w-7xl mx-auto">
 <div class="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
 <div>
-<span class="font-mono text-xs font-extrabold uppercase tracking-wider text-blue-600">DỮ LIỆU TÍCH HỢP TỪ GOOGLE SPREADSHEETS</span>
+<div class="flex items-center gap-2 text-blue-700 font-mono text-xs font-black uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">database</span>
+            DỮ LIỆU TÍCH HỢP TỪ GOOGLE SPREADSHEETS
+          </div>
 <h2 class="font-headline text-2xl sm:text-4xl font-black uppercase text-blue-950 mt-1">BẢNG TỔNG SẮP ĐIỂM THỰC TẾ 51 CHIẾN BINH</h2>
 </div>
-<div class="font-mono text-xs text-blue-900 bg-white border border-sky-200 px-3.5 py-1.5 rounded-xl shadow-sm">
-          XẾP HẠNG TUẦN 1 • MORSE &amp; SEMAPHORE CHUẨN A+ ĐẾN E
-        </div>
+<div class="font-mono text-xs text-blue-950 bg-blue-100 border-2 border-blue-300 px-4 py-2 rounded-xl shadow-sm flex items-center gap-2 font-bold">
+<span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+<span class="">XẾP HẠNG TUẦN 1 • MORSE &amp; SEMAPHORE CHUẨN A+ ĐẾN E</span>
 </div>
-<!-- Rank Explanation & Legend -->
-<div class="rounded-2xl bg-blue-950 p-4 text-white mb-6 shadow flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono text-xs">
+</div>
+<!-- Rank Legend -->
+<div class="rounded-2xl bg-gradient-to-r from-[#001c38] via-[#0a2558] to-[#001c38] p-4 text-white mb-6 shadow-hud flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono text-xs border border-blue-900">
 <div class="flex items-center gap-2">
 <span class="material-symbols-outlined text-amber-400">info</span>
-<span class="font-bold text-cyan-300">QUY ƯỚC XẾP HẠNG:</span>
+<span class="font-black text-cyan-300">QUY ƯỚC XẾP HẠNG:</span>
 </div>
 <div class="flex flex-wrap gap-2">
-<span class="px-2.5 py-1 rounded bg-amber-400 text-slate-950 font-black">RANK S (Morse A+/B+, Sema A+, IQ ≥66)</span>
-<span class="px-2.5 py-1 rounded bg-cyan-400 text-slate-950 font-black">RANK A (Morse B/B+, Sema A+/B+)</span>
-<span class="px-2.5 py-1 rounded bg-blue-500 text-white font-bold">RANK B (Morse C/C+, Sema Đạt)</span>
-<span class="px-2.5 py-1 rounded bg-slate-600 text-slate-100">RANK C/D (Cần bứt phá Vòng 2)</span>
+<span class="px-2.5 py-1 rounded bg-amber-400 text-slate-950 font-black shadow-sm">RANK S (Morse A+/B+, Sema A+, IQ ≥66)</span>
+<span class="px-2.5 py-1 rounded bg-cyan-400 text-slate-950 font-black shadow-sm">RANK A (Morse B/B+, Sema A+/B+)</span>
+<span class="px-2.5 py-1 rounded bg-blue-500 text-white font-bold shadow-sm">RANK B (Morse C/C+, Sema Đạt)</span>
+<span class="px-2.5 py-1 rounded bg-slate-600 text-slate-100 font-bold">RANK C/D (Cần bứt phá Vòng 2)</span>
 </div>
 </div>
-<!-- Real Data Table -->
-<div class="rounded-2xl bg-white border border-sky-200 shadow-sm overflow-x-auto">
-<table class="w-full text-left border-collapse min-w-[950px]">
+<!-- Real Data Esports Tournament Table With Real Avatars -->
+<div class="rounded-3xl bg-white border-2 border-blue-200 shadow-card-bold overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse min-w-[980px]">
 <thead>
-<tr class="bg-sky-50/80 font-mono text-xs text-blue-950 uppercase tracking-wider border-b border-sky-200">
-<th class="py-3.5 px-3 text-center">Hạng</th>
-<th class="py-3.5 px-3">Họ và Tên Thí Sinh</th>
-<th class="py-3.5 px-3">Chiến Đội &amp; Vai Trò</th>
-<th class="py-3.5 px-3 text-center">Mã Morse T1</th>
-<th class="py-3.5 px-3 text-center">Semaphore T1</th>
-<th class="py-3.5 px-3 text-center">Điểm Test IQ</th>
-<th class="py-3.5 px-3 text-center">Phân Cấp Rank</th>
-<th class="py-3.5 px-4 text-right">Tổng Quy Đổi T1</th>
+<tr class="bg-gradient-to-r from-blue-100 via-sky-50 to-blue-100 font-mono text-xs text-blue-950 uppercase tracking-wider border-b-2 border-blue-200">
+<th class="py-4 px-3 text-center w-16">Hạng</th>
+<th class="py-4 px-4">Thí Sinh</th>
+<th class="py-4 px-4">Chiến Đội &amp; Vai Trò</th>
+<th class="py-4 px-3 text-center">Mã Morse T1</th>
+<th class="py-4 px-3 text-center">Semaphore T1</th>
+<th class="py-4 px-3 text-center">Điểm Test IQ</th>
+<th class="py-4 px-3 text-center">Phân Cấp Rank</th>
+<th class="py-4 px-5 text-right">Tổng Quy Đổi T1</th>
 </tr>
 </thead>
-<tbody class="divide-y divide-sky-100 font-body text-sm">
+<tbody class="divide-y divide-blue-100 font-body text-sm">
 <!-- 1. Hồ Đắc Thành Đạt -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center"><span class="inline-flex w-7 h-7 rounded-full bg-amber-400 text-blue-950 font-mono font-black items-center justify-center">1</span></td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Hồ Đắc Thành Đạt (T)</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-blue-800">Team VTD</span> <span class="text-slate-400">(Đội trưởng)</span></td>
-<td class="py-3 px-3 text-center font-mono font-black text-blue-700 bg-blue-50/70 rounded">A+</td>
-<td class="py-3 px-3 text-center font-mono font-bold text-amber-700">A</td>
+<tr class="hover:bg-amber-50/70 transition-colors">
+<td class="py-3 px-3 text-center">
+<span class="inline-flex w-8 h-8 rounded-full bg-amber-400 text-blue-950 font-mono font-black items-center justify-center shadow">1</span>
+</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Thành Đạt" class="w-10 h-10 rounded-full object-cover border-2 border-amber-400 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1UyOj9Bhz_dsZdoOGP2UZoY3Kha0RssJO3q4BEei6mJB-L5VTgQlYZSm1HCR6KmtI1bFwAr7wTDVd9tKgoPKH7OyE-Rm-4XQgbYWSK9l3wG9rtt0l_lxbueS__wE80nB1f8IgKtdQcN77hVugrD3E4xYR9CFF0FFGEBqO0VbvBYSZUWLqI3eOke7Q5pzCPZDMBDcrRwNztFw6JlqIeOTukiBbxGmjIxKZSCZfECL2Mla2mepyhXDPwicNGa">
+<div>
+<div class="font-black text-blue-950">Hồ Đắc Thành Đạt (T)</div>
+<span class="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 font-bold">Kỷ Lục Morse A+</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-blue-800">Team VTD</span> <span class="text-slate-500">(Đội trưởng)</span></td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 font-mono font-black text-blue-700 bg-blue-100 rounded-md border border-blue-200">A+</span></td>
+<td class="py-3 px-3 text-center font-mono font-black text-amber-700">A</td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-800">66</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-amber-400 text-slate-950 font-mono text-xs font-black">RANK S</span></td>
-<td class="py-3 px-4 text-right font-headline font-black text-blue-700 text-base">351</td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-amber-400 text-slate-950 font-mono text-xs font-black shadow-sm">RANK S</span></td>
+<td class="py-3 px-5 text-right font-headline font-black text-blue-700 text-base">351</td>
 </tr>
 <!-- 2. Hải Nam -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center"><span class="inline-flex w-7 h-7 rounded-full bg-slate-200 text-slate-800 font-mono font-black items-center justify-center">2</span></td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Hải Nam</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-indigo-800">Team Alpha</span></td>
+<tr class="hover:bg-cyan-50/70 transition-colors">
+<td class="py-3 px-3 text-center">
+<span class="inline-flex w-8 h-8 rounded-full bg-slate-300 text-slate-900 font-mono font-black items-center justify-center shadow">2</span>
+</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Hải Nam" class="w-10 h-10 rounded-full object-cover border-2 border-cyan-400 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1VC1vUvu_yNdlobhA-NGezsVlOSSlg_mMrsPoPe3pESj8Rt1Vwp-Oeyniq1zCB54jwo-jq7JPtgz335zXAiOvVhyaxoiysKP1JylBFSIcCVUSPYcVSymHiD9JE4iJQ_OJonGYtOriG5xK2Rkql8g09Myf14qWBBpvn5DKafxV0GuVSfM5WhtXqCWbzeHUrXwBMbMO1TZP5ChDnaMpcBqaQL2VyjmIYxBrBp4y7bSF2ESdbFrceI3LgiivpE">
+<div>
+<div class="font-black text-blue-950">Hải Nam</div>
+<span class="text-[10px] font-mono text-cyan-800 bg-cyan-50 px-1.5 py-0.2 rounded border border-cyan-200 font-bold">Kỷ Lục IQ 74Đ</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-indigo-800">Team Alpha</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-700">B+</td>
-<td class="py-3 px-3 text-center font-mono font-black text-emerald-700 bg-emerald-50 rounded">A+</td>
-<td class="py-3 px-3 text-center font-mono font-black text-cyan-800 bg-cyan-100 rounded">74 (Kỷ lục)</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-amber-400 text-slate-950 font-mono text-xs font-black">RANK S</span></td>
-<td class="py-3 px-4 text-right font-headline font-black text-cyan-700 text-base">353</td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-emerald-700 bg-emerald-100 rounded border border-emerald-200">A+</span></td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-cyan-800 bg-cyan-100 rounded border border-cyan-200">74 (Kỷ lục)</span></td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-amber-400 text-slate-950 font-mono text-xs font-black shadow-sm">RANK S</span></td>
+<td class="py-3 px-5 text-right font-headline font-black text-cyan-700 text-base">353</td>
 </tr>
 <!-- 3. Nguyễn Xuân Nguyên -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center"><span class="inline-flex w-7 h-7 rounded-full bg-amber-200 text-amber-900 font-mono font-black items-center justify-center">3</span></td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Nguyễn Xuân Nguyên (T)</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-cyan-800">Team D2M</span> <span class="text-slate-400">(Đội trưởng)</span></td>
+<tr class="hover:bg-amber-50/70 transition-colors">
+<td class="py-3 px-3 text-center">
+<span class="inline-flex w-8 h-8 rounded-full bg-amber-200 text-amber-950 font-mono font-black items-center justify-center shadow">3</span>
+</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Xuân Nguyên" class="w-10 h-10 rounded-full object-cover border-2 border-amber-400 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XAUiou-THBDT50-z9Wr6jKz2lngQYajb2M_fV0KTTBN6GLO5wZEI5PzaNmadNO9sLtKbWRVSeMUxQVvKOIq4NaKUsLxqNLZ03edHwOZi1jkTHgrkDfHF0JYHEwfVTbbepfPk6Qf57tWlUEPGi_WznqfzLLfdAkym84Xa-5nl8ZUFAqq8hhc8hnThg6aBzOLBC7e-dxJzaX4M9hzMU0dY-wm-jp7mt-Qtx_qbIzkKmpjoAZ1CM1P9miOLo">
+<div>
+<div class="font-black text-blue-950">Nguyễn Xuân Nguyên (T)</div>
+<span class="text-[10px] font-mono text-amber-800 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200 font-bold">Thủ Lĩnh Toàn Diện</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-cyan-800">Team D2M</span> <span class="text-slate-500">(Đội trưởng)</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-700">B+</td>
-<td class="py-3 px-3 text-center font-mono font-black text-emerald-700 bg-emerald-50 rounded">A+</td>
-<td class="py-3 px-3 text-center font-mono font-black text-blue-900 bg-amber-100 rounded">73</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-amber-400 text-slate-950 font-mono text-xs font-black">RANK S</span></td>
-<td class="py-3 px-4 text-right font-headline font-black text-emerald-700 text-base">353</td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-emerald-700 bg-emerald-100 rounded border border-emerald-200">A+</span></td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-blue-950 bg-amber-100 rounded border border-amber-200">73</span></td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-amber-400 text-slate-950 font-mono text-xs font-black shadow-sm">RANK S</span></td>
+<td class="py-3 px-5 text-right font-headline font-black text-emerald-700 text-base">353</td>
 </tr>
 <!-- 4. Lê Nho Truyền -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">4</td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Lê Nho Truyền</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-blue-800">Team VTD</span></td>
+<tr class="hover:bg-blue-50/60 transition-colors">
+<td class="py-3 px-3 text-center font-mono font-black text-slate-500">4</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Lê Nho Truyền" class="w-10 h-10 rounded-full object-cover border-2 border-emerald-400 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XwFJVu21RYCujAh5ZWce_znxY7VxaHNYWNmAA1LGeMIafpNBbIqE4eTAvAhhDTyiyyU5htadMKlCKqjBQdsSTFt44C4n0MvflP0yBX3sFrSnMo1npcOXJV2Wcch7B-jUDRkO9gY7Vz9Mg3MKnnMoGXJB_tckZtzFhvEzUplTEEQigmPPARc-WjGpN0kVBzbpLJc4pwVWnPToG10gnsYaJiBzAP-Fp-qteB2DvjN4LLGLjacKB6hKBIhNA">
+<span class="font-black text-blue-950">Lê Nho Truyền</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-blue-800">Team VTD</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-700">B+</td>
-<td class="py-3 px-3 text-center font-mono font-black text-emerald-700 bg-emerald-50 rounded">A+</td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-emerald-700 bg-emerald-100 rounded border border-emerald-200">A+</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-800">70</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-amber-400 text-slate-950 font-mono text-xs font-black">RANK S</span></td>
-<td class="py-3 px-4 text-right font-headline font-bold text-blue-900">347</td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-amber-400 text-slate-950 font-mono text-xs font-black shadow-sm">RANK S</span></td>
+<td class="py-3 px-5 text-right font-headline font-bold text-blue-900">347</td>
 </tr>
 <!-- 5. Mai Thị Thanh Huyền -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">5</td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Mai Thị Thanh Huyền</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-blue-800">Team VTD</span></td>
+<tr class="hover:bg-blue-50/60 transition-colors">
+<td class="py-3 px-3 text-center font-mono font-black text-slate-500">5</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Thanh Huyền" class="w-10 h-10 rounded-full object-cover border-2 border-emerald-300 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XAUiou-THBDT50-z9Wr6jKz2lngQYajb2M_fV0KTTBN6GLO5wZEI5PzaNmadNO9sLtKbWRVSeMUxQVvKOIq4NaKUsLxqNLZ03edHwOZi1jkTHgrkDfHF0JYHEwfVTbbepfPk6Qf57tWlUEPGi_WznqfzLLfdAkym84Xa-5nl8ZUFAqq8hhc8hnThg6aBzOLBC7e-dxJzaX4M9hzMU0dY-wm-jp7mt-Qtx_qbIzkKmpjoAZ1CM1P9miOLo">
+<span class="font-black text-blue-950">Mai Thị Thanh Huyền</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-blue-800">Team VTD</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-700">B+</td>
-<td class="py-3 px-3 text-center font-mono font-black text-emerald-700 bg-emerald-50 rounded">A+</td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-emerald-700 bg-emerald-100 rounded border border-emerald-200">A+</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-800">65</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-cyan-100 text-cyan-900 font-mono text-xs font-bold">RANK A</span></td>
-<td class="py-3 px-4 text-right font-headline font-bold text-blue-900">342</td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-cyan-100 text-cyan-900 font-mono text-xs font-bold border border-cyan-200">RANK A</span></td>
+<td class="py-3 px-5 text-right font-headline font-bold text-blue-900">342</td>
 </tr>
 <!-- 6. Minh Toàn -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">6</td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Minh Toàn</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-cyan-800">Team D2M</span></td>
+<tr class="hover:bg-blue-50/60 transition-colors">
+<td class="py-3 px-3 text-center font-mono font-black text-slate-500">6</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Minh Toàn" class="w-10 h-10 rounded-full object-cover border-2 border-cyan-400 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1VC1vUvu_yNdlobhA-NGezsVlOSSlg_mMrsPoPe3pESj8Rt1Vwp-Oeyniq1zCB54jwo-jq7JPtgz335zXAiOvVhyaxoiysKP1JylBFSIcCVUSPYcVSymHiD9JE4iJQ_OJonGYtOriG5xK2Rkql8g09Myf14qWBBpvn5DKafxV0GuVSfM5WhtXqCWbzeHUrXwBMbMO1TZP5ChDnaMpcBqaQL2VyjmIYxBrBp4y7bSF2ESdbFrceI3LgiivpE">
+<span class="font-black text-blue-950">Minh Toàn</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-cyan-800">Team D2M</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-700">B+</td>
-<td class="py-3 px-3 text-center font-mono font-black text-emerald-700 bg-emerald-50 rounded">A+</td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-emerald-700 bg-emerald-100 rounded border border-emerald-200">A+</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-800">69</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-cyan-100 text-cyan-900 font-mono text-xs font-bold">RANK A</span></td>
-<td class="py-3 px-4 text-right font-headline font-bold text-blue-900">343</td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-cyan-100 text-cyan-900 font-mono text-xs font-bold border border-cyan-200">RANK A</span></td>
+<td class="py-3 px-5 text-right font-headline font-bold text-blue-900">343</td>
 </tr>
 <!-- 7. Tuấn Anh -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">7</td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Tuấn Anh</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-cyan-800">Team D2M</span></td>
+<tr class="hover:bg-blue-50/60 transition-colors">
+<td class="py-3 px-3 text-center font-mono font-black text-slate-500">7</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Tuấn Anh" class="w-10 h-10 rounded-full object-cover border-2 border-cyan-400 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1UyOj9Bhz_dsZdoOGP2UZoY3Kha0RssJO3q4BEei6mJB-L5VTgQlYZSm1HCR6KmtI1bFwAr7wTDVd9tKgoPKH7OyE-Rm-4XQgbYWSK9l3wG9rtt0l_lxbueS__wE80nB1f8IgKtdQcN77hVugrD3E4xYR9CFF0FFGEBqO0VbvBYSZUWLqI3eOke7Q5pzCPZDMBDcrRwNztFw6JlqIeOTukiBbxGmjIxKZSCZfECL2Mla2mepyhXDPwicNGa">
+<span class="font-black text-blue-950">Tuấn Anh</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-cyan-800">Team D2M</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-700">B+</td>
-<td class="py-3 px-3 text-center font-mono font-black text-emerald-700 bg-emerald-50 rounded">A+</td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-emerald-700 bg-emerald-100 rounded border border-emerald-200">A+</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-800">63</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-cyan-100 text-cyan-900 font-mono text-xs font-bold">RANK A</span></td>
-<td class="py-3 px-4 text-right font-headline font-bold text-blue-900">338</td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-cyan-100 text-cyan-900 font-mono text-xs font-bold border border-cyan-200">RANK A</span></td>
+<td class="py-3 px-5 text-right font-headline font-bold text-blue-900">338</td>
 </tr>
 <!-- 8. Hưng Phạm -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">8</td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Hưng Phạm (Công Hưng)</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-indigo-800">Team Alpha</span></td>
+<tr class="hover:bg-blue-50/60 transition-colors">
+<td class="py-3 px-3 text-center font-mono font-black text-slate-500">8</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Hưng Phạm" class="w-10 h-10 rounded-full object-cover border-2 border-indigo-400 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1VC1vUvu_yNdlobhA-NGezsVlOSSlg_mMrsPoPe3pESj8Rt1Vwp-Oeyniq1zCB54jwo-jq7JPtgz335zXAiOvVhyaxoiysKP1JylBFSIcCVUSPYcVSymHiD9JE4iJQ_OJonGYtOriG5xK2Rkql8g09Myf14qWBBpvn5DKafxV0GuVSfM5WhtXqCWbzeHUrXwBMbMO1TZP5ChDnaMpcBqaQL2VyjmIYxBrBp4y7bSF2ESdbFrceI3LgiivpE">
+<span class="font-black text-blue-950">Hưng Phạm (Công Hưng)</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-indigo-800">Team Alpha</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-700">B+</td>
-<td class="py-3 px-3 text-center font-mono font-black text-emerald-700 bg-emerald-50 rounded">A+</td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-emerald-700 bg-emerald-100 rounded border border-emerald-200">A+</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-800">56</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-cyan-100 text-cyan-900 font-mono text-xs font-bold">RANK A</span></td>
-<td class="py-3 px-4 text-right font-headline font-bold text-blue-900">329</td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-cyan-100 text-cyan-900 font-mono text-xs font-bold border border-cyan-200">RANK A</span></td>
+<td class="py-3 px-5 text-right font-headline font-bold text-blue-900">329</td>
 </tr>
 <!-- 9. Ái Mỹ -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">9</td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Ái Mỹ</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-indigo-800">Team Alpha</span></td>
+<tr class="hover:bg-blue-50/60 transition-colors">
+<td class="py-3 px-3 text-center font-mono font-black text-slate-500">9</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Ái Mỹ" class="w-10 h-10 rounded-full object-cover border-2 border-indigo-300 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XwFJVu21RYCujAh5ZWce_znxY7VxaHNYWNmAA1LGeMIafpNBbIqE4eTAvAhhDTyiyyU5htadMKlCKqjBQdsSTFt44C4n0MvflP0yBX3sFrSnMo1npcOXJV2Wcch7B-jUDRkO9gY7Vz9Mg3MKnnMoGXJB_tckZtzFhvEzUplTEEQigmPPARc-WjGpN0kVBzbpLJc4pwVWnPToG10gnsYaJiBzAP-Fp-qteB2DvjN4LLGLjacKB6hKBIhNA">
+<span class="font-black text-blue-950">Ái Mỹ</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-indigo-800">Team Alpha</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-700">B</td>
-<td class="py-3 px-3 text-center font-mono font-black text-emerald-700 bg-emerald-50 rounded">A+</td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-emerald-700 bg-emerald-100 rounded border border-emerald-200">A+</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-800">59</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-cyan-100 text-cyan-900 font-mono text-xs font-bold">RANK A</span></td>
-<td class="py-3 px-4 text-right font-headline font-bold text-blue-900">327</td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-cyan-100 text-cyan-900 font-mono text-xs font-bold border border-cyan-200">RANK A</span></td>
+<td class="py-3 px-5 text-right font-headline font-bold text-blue-900">327</td>
 </tr>
 <!-- 10. Hoàng Vy (T) -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">10</td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Hoàng Vy (T)</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-amber-800">Team W</span> <span class="text-slate-400">(Đội trưởng)</span></td>
+<tr class="hover:bg-blue-50/60 transition-colors">
+<td class="py-3 px-3 text-center font-mono font-black text-slate-500">10</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Hoàng Vy" class="w-10 h-10 rounded-full object-cover border-2 border-amber-400 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XwFJVu21RYCujAh5ZWce_znxY7VxaHNYWNmAA1LGeMIafpNBbIqE4eTAvAhhDTyiyyU5htadMKlCKqjBQdsSTFt44C4n0MvflP0yBX3sFrSnMo1npcOXJV2Wcch7B-jUDRkO9gY7Vz9Mg3MKnnMoGXJB_tckZtzFhvEzUplTEEQigmPPARc-WjGpN0kVBzbpLJc4pwVWnPToG10gnsYaJiBzAP-Fp-qteB2DvjN4LLGLjacKB6hKBIhNA">
+<span class="font-black text-blue-950">Hoàng Vy (T)</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-amber-800">Team W</span> <span class="text-slate-500">(Đội trưởng)</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-700">C</td>
-<td class="py-3 px-3 text-center font-mono font-black text-emerald-700 bg-emerald-50 rounded">A+</td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-emerald-700 bg-emerald-100 rounded border border-emerald-200">A+</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-800">66</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-900 font-mono text-xs font-bold">RANK B</span></td>
-<td class="py-3 px-4 text-right font-headline font-bold text-blue-900">324</td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-blue-100 text-blue-900 font-mono text-xs font-bold border border-blue-200">RANK B</span></td>
+<td class="py-3 px-5 text-right font-headline font-bold text-blue-900">324</td>
 </tr>
 <!-- 11. Đức Duy -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">11</td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Đức Duy</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-amber-800">Team W</span></td>
+<tr class="hover:bg-blue-50/60 transition-colors">
+<td class="py-3 px-3 text-center font-mono font-black text-slate-500">11</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Đức Duy" class="w-10 h-10 rounded-full object-cover border-2 border-amber-300 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1VC1vUvu_yNdlobhA-NGezsVlOSSlg_mMrsPoPe3pESj8Rt1Vwp-Oeyniq1zCB54jwo-jq7JPtgz335zXAiOvVhyaxoiysKP1JylBFSIcCVUSPYcVSymHiD9JE4iJQ_OJonGYtOriG5xK2Rkql8g09Myf14qWBBpvn5DKafxV0GuVSfM5WhtXqCWbzeHUrXwBMbMO1TZP5ChDnaMpcBqaQL2VyjmIYxBrBp4y7bSF2ESdbFrceI3LgiivpE">
+<span class="font-black text-blue-950">Đức Duy</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-amber-800">Team W</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-700">C+</td>
-<td class="py-3 px-3 text-center font-mono font-black text-emerald-700 bg-emerald-50 rounded">A+</td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-emerald-700 bg-emerald-100 rounded border border-emerald-200">A+</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-800">69</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-900 font-mono text-xs font-bold">RANK B</span></td>
-<td class="py-3 px-4 text-right font-headline font-bold text-blue-900">330</td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-blue-100 text-blue-900 font-mono text-xs font-bold border border-blue-200">RANK B</span></td>
+<td class="py-3 px-5 text-right font-headline font-bold text-blue-900">330</td>
 </tr>
 <!-- 12. Nguyễn Hưng / Vĩnh Hưng -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">12</td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Vĩnh Hưng / Nguyễn Hưng (T)</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-indigo-800">Team Alpha</span> <span class="text-slate-400">(Đội trưởng)</span></td>
+<tr class="hover:bg-blue-50/60 transition-colors">
+<td class="py-3 px-3 text-center font-mono font-black text-slate-500">12</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Vĩnh Hưng" class="w-10 h-10 rounded-full object-cover border-2 border-indigo-400 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1UyOj9Bhz_dsZdoOGP2UZoY3Kha0RssJO3q4BEei6mJB-L5VTgQlYZSm1HCR6KmtI1bFwAr7wTDVd9tKgoPKH7OyE-Rm-4XQgbYWSK9l3wG9rtt0l_lxbueS__wE80nB1f8IgKtdQcN77hVugrD3E4xYR9CFF0FFGEBqO0VbvBYSZUWLqI3eOke7Q5pzCPZDMBDcrRwNztFw6JlqIeOTukiBbxGmjIxKZSCZfECL2Mla2mepyhXDPwicNGa">
+<span class="font-black text-blue-950">Vĩnh Hưng / Nguyễn Hưng (T)</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-indigo-800">Team Alpha</span> <span class="text-slate-500">(Đội trưởng)</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-700">C</td>
-<td class="py-3 px-3 text-center font-mono font-black text-emerald-700 bg-emerald-50 rounded">A+</td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-emerald-700 bg-emerald-100 rounded border border-emerald-200">A+</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-800">70</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-900 font-mono text-xs font-bold">RANK B</span></td>
-<td class="py-3 px-4 text-right font-headline font-bold text-blue-900">327</td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-blue-100 text-blue-900 font-mono text-xs font-bold border border-blue-200">RANK B</span></td>
+<td class="py-3 px-5 text-right font-headline font-bold text-blue-900">327</td>
 </tr>
 <!-- 13. Vũ Đại Dương -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">13</td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Vũ Đại Dương</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-cyan-800">Team D2M</span></td>
+<tr class="hover:bg-blue-50/60 transition-colors">
+<td class="py-3 px-3 text-center font-mono font-black text-slate-500">13</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Vũ Đại Dương" class="w-10 h-10 rounded-full object-cover border-2 border-cyan-400 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1VC1vUvu_yNdlobhA-NGezsVlOSSlg_mMrsPoPe3pESj8Rt1Vwp-Oeyniq1zCB54jwo-jq7JPtgz335zXAiOvVhyaxoiysKP1JylBFSIcCVUSPYcVSymHiD9JE4iJQ_OJonGYtOriG5xK2Rkql8g09Myf14qWBBpvn5DKafxV0GuVSfM5WhtXqCWbzeHUrXwBMbMO1TZP5ChDnaMpcBqaQL2VyjmIYxBrBp4y7bSF2ESdbFrceI3LgiivpE">
+<span class="font-black text-blue-950">Vũ Đại Dương</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-cyan-800">Team D2M</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-700">B-</td>
-<td class="py-3 px-3 text-center font-mono font-black text-emerald-700 bg-emerald-50 rounded">A+</td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-emerald-700 bg-emerald-100 rounded border border-emerald-200">A+</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-800">66</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-900 font-mono text-xs font-bold">RANK B</span></td>
-<td class="py-3 px-4 text-right font-headline font-bold text-blue-900">332</td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-blue-100 text-blue-900 font-mono text-xs font-bold border border-blue-200">RANK B</span></td>
+<td class="py-3 px-5 text-right font-headline font-bold text-blue-900">332</td>
 </tr>
 <!-- 14. Nguyễn Bá Toàn -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">14</td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Nguyễn Bá Toàn</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-cyan-800">Team D2M</span></td>
+<tr class="hover:bg-blue-50/60 transition-colors">
+<td class="py-3 px-3 text-center font-mono font-black text-slate-500">14</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Bá Toàn" class="w-10 h-10 rounded-full object-cover border-2 border-cyan-400 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1UyOj9Bhz_dsZdoOGP2UZoY3Kha0RssJO3q4BEei6mJB-L5VTgQlYZSm1HCR6KmtI1bFwAr7wTDVd9tKgoPKH7OyE-Rm-4XQgbYWSK9l3wG9rtt0l_lxbueS__wE80nB1f8IgKtdQcN77hVugrD3E4xYR9CFF0FFGEBqO0VbvBYSZUWLqI3eOke7Q5pzCPZDMBDcrRwNztFw6JlqIeOTukiBbxGmjIxKZSCZfECL2Mla2mepyhXDPwicNGa">
+<span class="font-black text-blue-950">Nguyễn Bá Toàn</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-cyan-800">Team D2M</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-700">B-</td>
-<td class="py-3 px-3 text-center font-mono font-black text-emerald-700 bg-emerald-50 rounded">A+</td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-emerald-700 bg-emerald-100 rounded border border-emerald-200">A+</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-800">69</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-900 font-mono text-xs font-bold">RANK B</span></td>
-<td class="py-3 px-4 text-right font-headline font-bold text-blue-900">335</td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-blue-100 text-blue-900 font-mono text-xs font-bold border border-blue-200">RANK B</span></td>
+<td class="py-3 px-5 text-right font-headline font-bold text-blue-900">335</td>
 </tr>
 <!-- 15. Trần Ngọc Như Ý -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">15</td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Trần Ngọc Như Ý</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-cyan-800">Team D2M</span></td>
+<tr class="hover:bg-blue-50/60 transition-colors">
+<td class="py-3 px-3 text-center font-mono font-black text-slate-500">15</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Như Ý" class="w-10 h-10 rounded-full object-cover border-2 border-cyan-300 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XwFJVu21RYCujAh5ZWce_znxY7VxaHNYWNmAA1LGeMIafpNBbIqE4eTAvAhhDTyiyyU5htadMKlCKqjBQdsSTFt44C4n0MvflP0yBX3sFrSnMo1npcOXJV2Wcch7B-jUDRkO9gY7Vz9Mg3MKnnMoGXJB_tckZtzFhvEzUplTEEQigmPPARc-WjGpN0kVBzbpLJc4pwVWnPToG10gnsYaJiBzAP-Fp-qteB2DvjN4LLGLjacKB6hKBIhNA">
+<span class="font-black text-blue-950">Trần Ngọc Như Ý</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-cyan-800">Team D2M</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-700">C+</td>
-<td class="py-3 px-3 text-center font-mono font-black text-emerald-700 bg-emerald-50 rounded">A+</td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-emerald-700 bg-emerald-100 rounded border border-emerald-200">A+</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-800">69</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-900 font-mono text-xs font-bold">RANK B</span></td>
-<td class="py-3 px-4 text-right font-headline font-bold text-blue-900">331</td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-blue-100 text-blue-900 font-mono text-xs font-bold border border-blue-200">RANK B</span></td>
+<td class="py-3 px-5 text-right font-headline font-bold text-blue-900">331</td>
 </tr>
 <!-- 16. Văn Thành -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">16</td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Văn Thành</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-amber-800">Team W</span></td>
-<td class="py-3 px-3 text-center font-mono text-slate-400">--</td>
-<td class="py-3 px-3 text-center font-mono text-slate-400">--</td>
-<td class="py-3 px-3 text-center font-mono font-black text-cyan-800 bg-cyan-50 rounded">71</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-900 font-mono text-xs font-bold">RANK B</span></td>
-<td class="py-3 px-4 text-right font-headline font-bold text-blue-900">251*</td>
+<tr class="hover:bg-blue-50/60 transition-colors">
+<td class="py-3 px-3 text-center font-mono font-black text-slate-500">16</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Văn Thành" class="w-10 h-10 rounded-full object-cover border-2 border-amber-300 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1VC1vUvu_yNdlobhA-NGezsVlOSSlg_mMrsPoPe3pESj8Rt1Vwp-Oeyniq1zCB54jwo-jq7JPtgz335zXAiOvVhyaxoiysKP1JylBFSIcCVUSPYcVSymHiD9JE4iJQ_OJonGYtOriG5xK2Rkql8g09Myf14qWBBpvn5DKafxV0GuVSfM5WhtXqCWbzeHUrXwBMbMO1TZP5ChDnaMpcBqaQL2VyjmIYxBrBp4y7bSF2ESdbFrceI3LgiivpE">
+<span class="font-black text-blue-950">Văn Thành</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-amber-800">Team W</span></td>
+<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">--</td>
+<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">--</td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-cyan-900 bg-cyan-100 rounded border border-cyan-300">71</span></td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-blue-100 text-blue-900 font-mono text-xs font-bold border border-blue-200">RANK B</span></td>
+<td class="py-3 px-5 text-right font-headline font-bold text-blue-900">251*</td>
 </tr>
 <!-- 17. Diệu My -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">17</td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Diệu My</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-amber-800">Team W</span></td>
-<td class="py-3 px-3 text-center font-mono text-slate-600">E</td>
-<td class="py-3 px-3 text-center font-mono font-black text-emerald-700 bg-emerald-50 rounded">A+</td>
+<tr class="hover:bg-blue-50/60 transition-colors">
+<td class="py-3 px-3 text-center font-mono font-black text-slate-500">17</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Diệu My" class="w-10 h-10 rounded-full object-cover border-2 border-amber-300 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XAUiou-THBDT50-z9Wr6jKz2lngQYajb2M_fV0KTTBN6GLO5wZEI5PzaNmadNO9sLtKbWRVSeMUxQVvKOIq4NaKUsLxqNLZ03edHwOZi1jkTHgrkDfHF0JYHEwfVTbbepfPk6Qf57tWlUEPGi_WznqfzLLfdAkym84Xa-5nl8ZUFAqq8hhc8hnThg6aBzOLBC7e-dxJzaX4M9hzMU0dY-wm-jp7mt-Qtx_qbIzkKmpjoAZ1CM1P9miOLo">
+<span class="font-black text-blue-950">Diệu My</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-amber-800">Team W</span></td>
+<td class="py-3 px-3 text-center font-mono font-bold text-slate-600">E</td>
+<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 font-mono font-black text-emerald-700 bg-emerald-100 rounded border border-emerald-200">A+</span></td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-800">67</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-800 font-mono text-xs">RANK C</span></td>
-<td class="py-3 px-4 text-right font-headline font-bold text-blue-900">304</td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-slate-100 text-slate-800 font-mono text-xs font-bold border border-slate-200">RANK C</span></td>
+<td class="py-3 px-5 text-right font-headline font-bold text-blue-900">304</td>
 </tr>
 <!-- 18. Trọng Huy -->
-<tr class="hover:bg-sky-50/60">
-<td class="py-3 px-3 text-center font-mono font-bold text-slate-400">18</td>
-<td class="py-3 px-3 font-headline font-bold text-blue-950">Trọng Huy</td>
-<td class="py-3 px-3 font-mono text-xs"><span class="font-bold text-indigo-800">Team Alpha</span></td>
-<td class="py-3 px-3 text-center font-mono text-slate-600">D</td>
+<tr class="hover:bg-blue-50/60 transition-colors">
+<td class="py-3 px-3 text-center font-mono font-black text-slate-500">18</td>
+<td class="py-3 px-4 font-headline font-bold text-blue-950">
+<div class="flex items-center gap-3">
+<img alt="Avatar Trọng Huy" class="w-10 h-10 rounded-full object-cover border-2 border-indigo-300 shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1UyOj9Bhz_dsZdoOGP2UZoY3Kha0RssJO3q4BEei6mJB-L5VTgQlYZSm1HCR6KmtI1bFwAr7wTDVd9tKgoPKH7OyE-Rm-4XQgbYWSK9l3wG9rtt0l_lxbueS__wE80nB1f8IgKtdQcN77hVugrD3E4xYR9CFF0FFGEBqO0VbvBYSZUWLqI3eOke7Q5pzCPZDMBDcrRwNztFw6JlqIeOTukiBbxGmjIxKZSCZfECL2Mla2mepyhXDPwicNGa">
+<span class="font-black text-blue-950">Trọng Huy</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono text-xs"><span class="font-bold text-indigo-800">Team Alpha</span></td>
+<td class="py-3 px-3 text-center font-mono font-bold text-slate-600">D</td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-700">A</td>
 <td class="py-3 px-3 text-center font-mono font-bold text-slate-800">68</td>
-<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-800 font-mono text-xs">RANK C</span></td>
-<td class="py-3 px-4 text-right font-headline font-bold text-blue-900">308</td>
+<td class="py-3 px-3 text-center"><span class="px-2.5 py-0.5 rounded bg-slate-100 text-slate-800 font-mono text-xs font-bold border border-slate-200">RANK C</span></td>
+<td class="py-3 px-5 text-right font-headline font-bold text-blue-900">308</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="mt-4 flex items-center justify-between text-xs font-mono text-slate-500">
-<span>Hiển thị danh sách thí sinh tiêu biểu theo dữ liệu thực tế từ 8 bảng điểm. Dữ liệu đang tiếp tục cập nhật theo tuần.</span>
-<span class="text-blue-700 font-bold">51 THÍ SINH ĐÃ ĐƯỢC CHUẨN HOÁ</span>
+</div>
+<div class="mt-4 flex flex-col sm:flex-row items-center justify-between text-xs font-mono text-slate-600 gap-2">
+<span class="font-medium">Hiển thị danh sách thí sinh tiêu biểu theo dữ liệu thực tế từ 8 bảng điểm. Dữ liệu đang tiếp tục cập nhật theo tuần.</span>
+<span class="text-blue-900 font-black bg-blue-100 px-3.5 py-1 rounded-full border border-blue-300">
+          51 THÍ SINH ĐÃ ĐƯỢC CHUẨN HOÁ
+        </span>
 </div>
 </div>
 </section>
-<!-- SECTION: QUY CHẾ TÍNH ĐIỂM & TRANH GIẢI CHUNG CUỘC (NEW STYLING MATCHING IMAGE 3) -->
-<section class="w-full px-4 sm:px-8 py-16 bg-[#f8fbff] border-t border-sky-100" id="scoring-rules">
+<!-- SECTION: QUY CHẾ TÍNH ĐIỂM & TRANH GIẢI CHUNG CUỘC (FUTURISTIC BLUEPRINT CARDS) -->
+<section class="w-full px-4 sm:px-8 py-16 bg-gradient-to-b from-[#eaf2ff] via-[#f0f6ff] to-[#f8faff] border-t-2 border-blue-200" id="scoring-rules">
 <div class="max-w-7xl mx-auto">
 <!-- Section Header -->
 <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
 <div>
-<span class="font-mono text-xs font-extrabold uppercase tracking-wider text-blue-600 flex items-center gap-1.5">
+<span class="font-mono text-xs font-black uppercase tracking-wider text-blue-700 flex items-center gap-1.5">
 <span class="material-symbols-outlined text-sm">verified</span>
             QUY CHẾ TÍNH ĐIỂM CHUẨN XÁC 100%
           </span>
 <h2 class="font-headline text-2xl sm:text-4xl font-black uppercase text-blue-950 mt-1">
             CƠ CHẾ TÍNH ĐIỂM &amp; TRANH GIẢI CHUNG CUỘC
           </h2>
-<p class="font-body text-slate-600 text-sm mt-1 max-w-2xl">
+<p class="font-body text-slate-700 text-sm mt-1 max-w-2xl font-medium">
             Hệ thống bảng điểm 4 cột cá nhân minh bạch theo tuần, chu kỳ chốt ranking định kỳ và công thức quy đổi tỷ lệ 50/50 giải Nhất Toàn Đoàn.
           </p>
 </div>
-<div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white font-mono text-xs font-bold shadow shrink-0">
+<div class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-600 text-white font-mono text-xs font-black shadow-neon-blue shrink-0">
 <span class="material-symbols-outlined text-base">schedule</span>
-<span>CHU KỲ CHỐT: 21:00 CHỦ NHẬT</span>
+<span class="">CHU KỲ CHỐT: 21:00 CHỦ NHẬT</span>
 </div>
 </div>
 <!-- Two Main Rule Columns -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
 <!-- Khối 1: Cơ Cấu 4 Cột Điểm Cá Nhân Mỗi Tuần -->
-<div class="rounded-3xl bg-white border-2 border-sky-200 p-6 sm:p-8 shadow-sm flex flex-col justify-between">
+<div class="rounded-3xl bg-white border-2 border-blue-300 p-6 sm:p-8 shadow-card-bold card-lift flex flex-col justify-between">
 <div>
 <div class="flex items-center justify-between mb-3">
-<span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-bold uppercase">
+<span class="px-3.5 py-1 rounded-full bg-blue-100 text-blue-900 font-mono text-xs font-black uppercase border border-blue-300">
                 CƠ CẤU 4 CỘT ĐIỂM CÁ NHÂN MỖI TUẦN
               </span>
-<span class="font-mono text-xs text-slate-400 font-bold uppercase">ĐỘC LẬP TÍCH LŨY</span>
+<span class="font-mono text-xs text-slate-500 font-bold uppercase">ĐỘC LẬP TÍCH LŨY</span>
 </div>
 <h3 class="font-headline text-2xl font-black text-blue-950 uppercase mb-2">
               TỔNG ĐIỂM CÁ NHÂN = CỘNG TRỰC TIẾP 4 CỘT
             </h3>
-<p class="font-body text-xs sm:text-sm text-slate-600 mb-6">
+<p class="font-body text-xs sm:text-sm text-slate-600 mb-6 leading-relaxed font-medium">
               Mỗi thí sinh được chấm điểm minh bạch qua 4 cột độc lập hàng tuần. Điểm Năng Lực Bổ Trợ (IQ &amp; Nhanh Nhạy) được tính thành 1 cột điểm cộng trực tiếp.
             </p>
 <!-- 4 Sub-blocks -->
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
 <!-- Cột 1 -->
-<div class="p-4 rounded-2xl bg-sky-50/70 border border-sky-100 flex items-start gap-3">
-<div class="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+<div class="p-4 rounded-2xl bg-blue-50/80 border border-blue-200 flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm">
 <span class="material-symbols-outlined text-xl">sensors</span>
 </div>
 <div>
@@ -841,8 +1247,8 @@
 </div>
 </div>
 <!-- Cột 2 -->
-<div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-100 flex items-start gap-3">
-<div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+<div class="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm">
 <span class="material-symbols-outlined text-xl">flag</span>
 </div>
 <div>
@@ -851,8 +1257,8 @@
 </div>
 </div>
 <!-- Cột 3 -->
-<div class="p-4 rounded-2xl bg-cyan-50/70 border border-cyan-100 flex items-start gap-3">
-<div class="w-9 h-9 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center shrink-0">
+<div class="p-4 rounded-2xl bg-cyan-50/80 border border-cyan-200 flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-cyan-600 text-white flex items-center justify-center shrink-0 shadow-sm">
 <span class="material-symbols-outlined text-xl">lock_open</span>
 </div>
 <div>
@@ -861,68 +1267,72 @@
 </div>
 </div>
 <!-- Cột 4 -->
-<div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-100 flex items-start gap-3">
-<div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+<div class="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
 <span class="material-symbols-outlined text-xl">psychology</span>
 </div>
 <div>
 <h4 class="font-mono text-xs font-black text-blue-950 uppercase">CỘT 4: NĂNG LỰC BỔ TRỢ</h4>
-<p class="font-body text-xs text-slate-600 mt-0.5">IQ Logic + Độ Nhanh Nhạy (Cộng trực tiếp Tổng điểm).</p>
+<p class="font-body text-xs text-slate-600 mt-0.5">IQ Logic + Độ Nhanh Nhạy (Cộng trực tiếp).</p>
 </div>
 </div>
 </div>
 </div>
 <!-- Bottom Banner -->
-<div class="rounded-2xl bg-blue-950 p-4 text-white flex items-center justify-between font-mono text-xs">
+<div class="rounded-2xl bg-gradient-to-r from-[#001c38] to-[#0a2558] p-4 text-white flex items-center justify-between font-mono text-xs border border-blue-900 shadow">
 <span class="flex items-center gap-2 font-bold">
-<span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
               CHU KỲ XẾP HẠNG: CHỐT RANKING 1 LẦN / TUẦN
             </span>
-<span class="px-2.5 py-1 rounded bg-blue-800 text-cyan-200 font-black">21:00 CHỦ NHẬT</span>
+<span class="px-3 py-1 rounded-md bg-blue-600 text-white font-black shadow">21:00 CHỦ NHẬT</span>
 </div>
 </div>
 <!-- Khối 2: 2 Cột Điểm Chung Kết & Công Thức 50/50 Tranh Giải -->
-<div class="rounded-3xl bg-white border-2 border-amber-300 p-6 sm:p-8 shadow-sm flex flex-col justify-between">
+<div class="rounded-3xl bg-white border-2 border-amber-400 p-6 sm:p-8 shadow-card-bold card-lift flex flex-col justify-between">
 <div>
 <div class="flex items-center justify-between mb-3">
-<span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 font-mono text-xs font-bold uppercase">
+<span class="px-3.5 py-1 rounded-full bg-amber-100 text-amber-950 font-mono text-xs font-black uppercase border border-amber-300">
                 QUY CHẾ TRANH GIẢI CHUNG KẾT
               </span>
-<span class="font-mono text-xs text-amber-700 font-bold uppercase">CÁ NHÂN &amp; CHIẾN ĐỘI</span>
+<span class="font-mono text-xs text-amber-800 font-bold uppercase">CÁ NHÂN &amp; CHIẾN ĐỘI</span>
 </div>
 <h3 class="font-headline text-2xl font-black text-blue-950 uppercase mb-2">
               2 CỘT ĐIỂM CHUNG KẾT &amp; CÔNG THỨC 50/50
             </h3>
-<p class="font-body text-xs sm:text-sm text-slate-600 mb-6">
-              Bảng điểm Vòng Chung Kết chia rõ 2 Cột Điểm lớn: <strong class="text-blue-900">[CỘT ĐIỂM CÁ NHÂN]</strong> và <strong class="text-blue-900">[CỘT ĐIỂM CHIẾN ĐỘI]</strong> để xác định chuẩn xác các danh hiệu vinh quang.
+<p class="font-body text-xs sm:text-sm text-slate-600 mb-6 leading-relaxed font-medium">
+              Bảng điểm Vòng Chung Kết chia rõ 2 Cột Điểm lớn: <strong class="text-blue-950">[CỘT ĐIỂM CÁ NHÂN]</strong> và <strong class="text-blue-950">[CỘT ĐIỂM CHIẾN ĐỘI]</strong> để xác định chuẩn xác các danh hiệu vinh quang.
             </p>
 <div class="space-y-4 mb-6">
 <!-- Item 1: Cá nhân -->
-<div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-start gap-3">
-<span class="material-symbols-outlined text-amber-500 text-2xl shrink-0 mt-0.5">emoji_events</span>
+<div class="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 shadow-sm flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-xl">emoji_events</span>
+</div>
 <div>
 <h4 class="font-headline text-sm font-black uppercase text-blue-950">
                     QUÁN QUÂN TỪNG NỘI DUNG (CÁ NHÂN)
                   </h4>
-<p class="font-body text-xs text-slate-600 mt-1 leading-relaxed">
-                    Thí sinh có tổng điểm tích lũy cao nhất ở từng môn riêng biệt (<strong class="text-blue-900">Morse, Semaphore, Mật thư</strong>) sẽ giành ngôi vị <strong class="text-amber-600 uppercase">QUÁN QUÂN NỘI DUNG ĐÓ!</strong>
+<p class="font-body text-xs text-slate-700 mt-1 leading-relaxed">
+                    Thí sinh có tổng điểm tích lũy cao nhất ở từng môn riêng biệt (<strong class="text-blue-900">Morse, Semaphore, Mật thư</strong>) sẽ giành ngôi vị <strong class="text-amber-700 uppercase font-black">QUÁN QUÂN NỘI DUNG ĐÓ!</strong>
 </p>
 </div>
 </div>
 <!-- Item 2: Đồng đội 50/50 -->
-<div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-start gap-3">
-<span class="material-symbols-outlined text-red-500 text-2xl shrink-0 mt-0.5">military_tech</span>
+<div class="p-4 rounded-2xl bg-red-50/60 border border-red-200 shadow-sm flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-xl">military_tech</span>
+</div>
 <div class="w-full">
 <h4 class="font-headline text-sm font-black uppercase text-blue-950">
                     GIẢI NHẤT ĐỒNG ĐỘI CHIẾN ĐỘI (TOÀN ĐOÀN)
                   </h4>
-<p class="font-body text-xs text-slate-600 mt-1">
+<p class="font-body text-xs text-slate-700 mt-1">
                     Tính theo <strong>công thức quy đổi tỷ lệ 50/50</strong>:
                   </p>
-<div class="mt-2.5 p-3 rounded-xl bg-amber-50/80 border border-amber-200 font-mono text-xs text-blue-950 font-bold">
+<div class="mt-2.5 p-3 rounded-xl bg-amber-100/80 border border-amber-300 font-mono text-xs text-blue-950 font-black">
                     [Tổng điểm thành viên cá nhân (50%)] + [Điểm Trò Chơi Lớn của Đội (50%)]
                   </div>
-<p class="font-body text-xs text-amber-900 mt-2 font-medium">
+<p class="font-body text-xs text-amber-950 mt-2 font-bold">
                     → Chiến đội có tổng điểm kết hợp cao nhất sẽ giành <strong>GIẢI NHẤT TOÀN ĐOÀN DKS SKILL 2026!</strong>
 </p>
 </div>
@@ -930,7 +1340,7 @@
 </div>
 </div>
 <!-- Bottom Commitment -->
-<div class="rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 p-4 text-blue-950 flex items-center justify-between font-mono text-xs font-black shadow">
+<div class="rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 p-4 text-blue-950 flex items-center justify-between font-mono text-xs font-black shadow-neon-amber">
 <span class="uppercase tracking-wider">CÔNG BẰNG • MINH BẠCH • ĐOÀN KẾT SẮT ĐÁ</span>
 <span class="material-symbols-outlined text-lg">shield</span>
 </div>
@@ -939,19 +1349,21 @@
 </div>
 </section>
 </main>
-<!-- Footer -->
-<footer class="w-full bg-blue-950 text-white py-12 px-4 sm:px-8 border-t border-blue-900">
-<div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 font-mono text-xs text-sky-300">
-<div class="flex items-center gap-3">
-<img alt="Logo CLB Kỹ Năng DKS" class="w-10 h-10 rounded-full object-cover border border-sky-400/40 shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-iIX8IuARSX3gjRjzjxwjb_84aXYRY22Cm7ZlScW7RXpecHh1rSztJW4az3KkFTdprrRfpsuekk8TgHoGBtC7galF1r4Kw83ieWDB8c5edBgoBUS51713OdR1dfjDqkcc3YMNPOSams7LbmJSoDWG3EOCXGmhazxdqjK57fLM_RBPQGZ9Ube7xgrdMKtljuqXGz2y8E_pS4d_2dl2dqIS4yJhX2zT_RmQ36Adqy9VmFZ9qse1OadOV0G6CFtoIEOLtEs"/>
+<!-- FOOTER -->
+<footer class="w-full bg-[#001c38] text-white py-12 px-4 sm:px-8 border-t-2 border-cyan-400/40">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 font-mono text-xs text-cyan-300">
+<div class="flex items-center gap-3.5">
+<img alt="Logo CLB Kỹ Năng DKS" class="w-12 h-12 rounded-full object-cover border-2 border-cyan-400 bg-white shadow-md shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQIXEOcFpEMnb1o_KHH8_c27SXC31x0Itum7DWIpMsw09KLe08mufiesYL9QVK8z3iqgiraWEdaUaOwUOIZqsxz0BIsNMfqus6etl_6rL4lM-4alkCd7BEB1f5s9ybPgcNY3nfu3o0kn5f-bCxnq_DRRIAAhJiQPsQMjrxizkLP_NJ--LKuk_J1o11ewrWdGnCBEZt1skRN51w5pkuOvXgsbm_pGr6XK3WaKOi8nJ_jxh-GZqLrEo3Ts9eCr62ltzeCSU">
 <div>
-<div class="font-headline font-bold text-white text-sm">CLB KỸ NĂNG DKS</div>
-<div class="text-[11px] text-sky-400">Bản Lĩnh Thực Chiến • Kỷ Nguyên Mới 2026</div>
+<div class="font-headline font-black text-white text-base">CLB KỸ NĂNG DKS</div>
+<div class="text-xs text-cyan-300 font-semibold">Bản Lĩnh Thực Chiến • Kỷ Nguyên Mới 2026</div>
 </div>
 </div>
-<div class="text-center md:text-right text-slate-400 text-[11px]">
+<div class="text-center md:text-right text-slate-300 text-xs">
       Hệ thống quản lý điểm thi đấu thực chiến DKS SKILL 2026 • Đồng bộ dữ liệu trực tiếp từ Google Sheets
     </div>
 </div>
 </footer>
+
+
 </body></html>
